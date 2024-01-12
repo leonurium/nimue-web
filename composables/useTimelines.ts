@@ -12,8 +12,7 @@ export default () => {
                 const response = await $fetch(
                     `${base_url}/timeline/B6961C40-5D18-48FE-B06C-1314B34162CC/${page.value}/${itemPerPage}`,
                     {
-                        method: 'GET',
-                        mode: 'no-cors'
+                        method: 'GET'
                     }
                 )
                 console.log(response)
