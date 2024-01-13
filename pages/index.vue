@@ -13,10 +13,10 @@
                     <p>{{ responseMessage }}</p>
                 </div>
 
-                <div v-if="loadingMore">
+                <div class="pt-10" v-if="loadingMore">
                     <CardThreadsSkeleton />
                 </div>
-                <UiButton v-else @click="loadTimelineData" class="items-center">Load More</UiButton>
+                <Observer v-else @intersect="loadMore"/>
             </div>
         </UiContainer>
     </div>
@@ -24,13 +24,14 @@
 
 <script lang="ts" setup>
 import { type BaseResponse, type Timeline } from '@/types/timeline';
+import Observer from "@/components/Observer.vue";
 
 const base_url = useRuntimeConfig().public.base_api_url;
 const itemPerPage = ref(10);
 const page = ref(1);
 const loading = ref(false);
 const loadingMore = ref(false);
-const responseMessage = ref("No Thread Today :)");
+const responseMessage = ref("Mau curhat apa? sabar ya sayang :)");
 const timelines = ref<Timeline[]>([]);
 
 const loadTimelineData = async () => {
@@ -39,12 +40,10 @@ const loadTimelineData = async () => {
             `${base_url}/timeline/B6961C40-5D18-48FE-B06C-1314B34162CC/${page.value}/${itemPerPage.value}`,
             { method: 'GET' }
         );
-        console.log(responseTimeline);
         if (responseTimeline.success) {
             page.value = responseTimeline.data.next_page;
             responseMessage.value = responseTimeline.message
             timelines.value = timelines.value.concat(responseTimeline.data.timelines);
-            // timelines.value = [...timelines.value, ...responseTimeline.data.timelines];
             responseMessage.value = responseTimeline.message;
         } else {
             responseMessage.value = responseTimeline.message
