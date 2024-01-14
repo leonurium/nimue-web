@@ -21,21 +21,22 @@
 </template>
 
 <script lang="ts" setup>
-import { type BaseResponse, type Timeline, type TimelinesData } from '@/types/timeline';
+import type { BaseResponse, Timeline, TimelinesData } from '@/types/timeline';
 import Observer from "@/components/Observer.vue";
 
 const base_url = useRuntimeConfig().public.base_api_url;
+const device_id = ref('B6961C40-5D18-48FE-B06C-1314B34162CC')
 const itemPerPage = ref(10);
 const page = ref(1);
 const loading = ref(false);
 const loadingMore = ref(false);
-const responseMessage = ref("Mau curhat apa? sabar ya sayang :)");
+const responseMessage = ref("Mau curhat apa?");
 const timelines = ref<Timeline[]>([]);
 
 const getTimelines = async () => {
     try {
         const responseTimeline = await $fetch<BaseResponse>(
-            `${base_url}/timeline/B6961C40-5D18-48FE-B06C-1314B34162CC/${page.value}/${itemPerPage.value}`,
+            `${base_url}/timeline/${device_id.value}/${page.value}/${itemPerPage.value}`,
             { method: 'GET' }
         );
         if (responseTimeline.success) {

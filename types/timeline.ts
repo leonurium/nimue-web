@@ -7,7 +7,7 @@
 // These functions will throw an error if the JSON doesn't
 // match the expected interface, even if the JSON is valid.
 
-type BaseDataResponse = Timeline | TimelinesData
+type BaseDataResponse = Timeline | TimelinesData | CommentsData | null
 
 export interface BaseResponse {
     success: boolean;
@@ -34,4 +34,19 @@ export interface Timeline {
     is_ads:         boolean;
     ads_type?:      string;
     ad_unit_id?:    string;
+}
+
+export interface CommentsData {
+    page: number;
+    next_page: number;
+    comments: Comment[];
+}
+
+export interface Comment {
+    comment_id: number;
+    timeline_id: number;
+    device_id: string;
+    name: string;
+    text_content: string;
+    timed: string;
 }
