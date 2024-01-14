@@ -65,6 +65,7 @@
             <Observer v-else @intersect="loadMore"/>
 
         </div>
+        <ReplyForm/>
 
     </UiContainer>
 </template>
