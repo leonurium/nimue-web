@@ -1,16 +1,17 @@
 <!-- ReplyForm.vue -->
 <template>
     <form @submit.prevent="submitReply" class="flex items-center gap-2">
-        <UiAvatar class="h-10 w-10 rounded-full" :fallback="getInitials(timeline?.name ?? 'Netijen Curhat')" />
+        <UiAvatar class="h-10 w-10 rounded-full" :fallback="getInitials('Netijen Curhat')" />
         <UiInput v-model="replyText" class="rounded-full max-w-2xl" placeholder="mau bales apa?"></UiInput>
         <UiButton type="submit" class="rounded-full">Post</UiButton>
     </form>
 </template>
 
-<script setup>
+<script lang="ts" setup>
 
-import { BaseResponse } from '~/types/timeline';
+import type { BaseResponse } from '~/types/timeline';
 
+const base_url = useRuntimeConfig().public.base_api_url;
 const replyText = ref('');
 
 const submitReply = () => {
@@ -24,20 +25,20 @@ const submitReply = () => {
 
 const addNewReply = async () => {
     try {
-        const responseReply = $fetch<BaseResponse>(
-            `${base_url}/comment/${timeline_id}/${page.value}/${itemPerPage.value}`,
-            { method: 'GET' }
+        const responseReply = await $fetch<BaseResponse>(
+            `${base_url}/comment/new`,
+            { method: 'POST' }
         );
-        console.log(responseComment)
-        if (responseComment.success) {
+        console.log(responseReply)
+        if (responseReply.success) {
 
         } else {
-            console.log(responseComment.message)
+            console.log(responseReply.message)
         }
     } catch (error) {
         console.log(error)
     } finally {
-        loadingMore.value = false
+
     }
 }
 </script>
