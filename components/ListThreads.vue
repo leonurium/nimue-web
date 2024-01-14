@@ -19,11 +19,9 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <!-- <IconHeart class="text-red-500"/> -->
-                    <UiButton @click="doLikeTimeline(timeline.timeline_id)"
+                    <UiButton @click="buttonLikeClicked(timeline.timeline_id)"
                         class="rounded-full bg-clear text-gray-800 dark:text-gray-50 hover:bg-gray-200">
-                        <IconHeart
-                            v-if="timeline.is_liked"
-                            class="text-red-500" />
+                        <IconHeart v-if="timeline.is_liked" class="text-red-500" />
                         <IconHeart v-else />
                         {{ timeline.total_likes }}
                     </UiButton>
@@ -58,34 +56,65 @@ function goToComment(timeline_id: number) {
     navigateTo(`/${timeline_id}`)
 }
 
-const doLikeTimeline = async (timeline_id: number) => {
+function buttonLikeClicked(timeline_id: number) {
     const item = props.timelines.filter(item => item.timeline_id == timeline_id)
     console.log(props.timelines)
     if (item[0].is_liked ?? false) {
-        console.log('udah di like')
+        console.log('perform unlike')
+        doUnlikeTimeline(timeline_id)
     } else {
-        try {
-            const responseLike = await $fetch<BaseResponse>(
-                `${base_url}/timeline/like/`,
-                {
-                    method: 'POST',
-                    body: {
-                        'device_id': `${device_id.value}`,
-                        'timeline_id': `${timeline_id}`
-                    }
-                }
-            );
-            console.log(responseLike)
-            if (responseLike.success) {
-                console.log(responseLike.message)
-            } else {
-                console.log(responseLike.message)
-            }
-        } catch (error) {
-            console.log(error)
-        } finally {
+        console.log('perform like')
+        doLikeTimeline(timeline_id)
+    }
+}
 
+const doLikeTimeline = async (timeline_id: number) => {
+    try {
+        const responseLike = await $fetch<BaseResponse>(
+            `${base_url}/timeline/like/`,
+            {
+                method: 'POST',
+                body: {
+                    'device_id': `${device_id.value}`,
+                    'timeline_id': timeline_id
+                }
+            }
+        );
+        console.log(responseLike)
+        if (responseLike.success) {
+            console.log(responseLike.message)
+        } else {
+            console.log(responseLike.message)
         }
+    } catch (error) {
+        console.log(error)
+    } finally {
+
+    }
+}
+
+const doUnlikeTimeline = async (timeline_id: number) => {
+    try {
+        const responseUnlike = await $fetch<BaseResponse>(
+            `${base_url}/timeline/unlike/`,
+            {
+                method: 'POST',
+                body: {
+                    'device_id': `${device_id.value}`,
+                    'timeline_id': timeline_id
+                }
+            }
+        );
+        console.log(responseUnlike)
+        if (responseUnlike.success) {
+            console.log(responseUnlike.message)
+        } else {
+            console.log(responseUnlike.message)
+        }
+    } catch (error) {
+        console.log(error)
+    } finally {
+
     }
 }
 
