@@ -18,21 +18,16 @@
                     {{ timeline.text_content }}
                 </div>
                 <div class="flex items-center gap-2">
-                    <UiButton @click="buttonLikeClicked(timeline.timeline_id)"
-                        variant="ghost"
-                        class="rounded-full">
+                    <UiButton @click="buttonLikeClicked(timeline.timeline_id)" variant="ghost" class="rounded-full">
                         <IconHeart :class="{
-                            'text-red-500': likeStates[timeline.timeline_id]?.isLiked ?? timeline.is_liked,
+                            'text-red-500': timeline.is_liked,
                             'animate-pulse': likeStates[timeline.timeline_id]?.likeClicked ?? false
                         }" />
                         <span :class="{
                             'animate-pulse': likeStates[timeline.timeline_id]?.likeClicked ?? false
-                        }"
-                        >{{ timeline.total_likes }}</span>
+                        }">{{ timeline.total_likes }}</span>
                     </UiButton>
-                    <UiButton @click="goToComment(timeline.timeline_id)"
-                        variant="ghost"
-                        class="rounded-full">
+                    <UiButton @click="goToComment(timeline.timeline_id)" variant="ghost" class="rounded-full">
                         <IconMessageCircle />{{ timeline.total_comments }}
                     </UiButton>
                     <div class="ml-auto">
@@ -53,36 +48,35 @@ import type { BaseResponse, Timeline } from '@/types/timeline';
 
 const base_url = useRuntimeConfig().public.base_api_url;
 const device_id = ref('B6961C40-5D18-48FE-B06C-1314B34162CC')
-const likeStates = reactive<{ [key: number]: { isLiked: boolean, likeClicked: boolean } }>({});
+const likeStates = reactive<{ [key: number]: { likeClicked: boolean } }>({});
 
 const props = defineProps<{
     timelines: Timeline[]
 }>();
+
+const timeline = (timeline_id: number) => {
+    const item = props.timelines.filter(item => item.timeline_id == timeline_id)
+    return item.at(0)
+}
 
 function goToComment(timeline_id: number) {
     navigateTo(`/${timeline_id}`)
 }
 
 function buttonLikeClicked(timeline_id: number) {
-    if (!likeStates[timeline_id]) {
-        likeStates[timeline_id] = {
-            isLiked: false,
-            likeClicked: false
-        };
-    }
+    if ((likeStates[timeline_id]?.likeClicked ?? false) == false) {
+        if (!likeStates[timeline_id]) {
+            likeStates[timeline_id] = {
+                likeClicked: false
+            };
+        }
+        likeStates[timeline_id].likeClicked = true;
 
-    const item = props.timelines.filter(item => item.timeline_id == timeline_id)
-    likeStates[timeline_id].isLiked = item.at(0)?.is_liked ?? false
-    likeStates[timeline_id].likeClicked = true;
-    
-    console.log(props.timelines)
-
-    if (likeStates[timeline_id].isLiked) {
-        console.log('perform unlike')
-        doUnlikeTimeline(timeline_id)
-    } else {
-        console.log('perform like')
-        doLikeTimeline(timeline_id)
+        if (timeline(timeline_id)?.is_liked ?? false) {
+            doUnlikeTimeline(timeline_id)
+        } else {
+            doLikeTimeline(timeline_id)
+        }
     }
 }
 
@@ -100,10 +94,8 @@ const doLikeTimeline = async (timeline_id: number) => {
         );
         console.log(responseLike)
         if (responseLike.success) {
-            likeStates[timeline_id].isLiked = true;
-            const item = props.timelines.filter(item => item.timeline_id == timeline_id)
-            item.at(0)!.is_liked = true
-            item.at(0)!.total_likes += 1
+            timeline(timeline_id)!.is_liked = true
+            timeline(timeline_id)!.total_likes += 1
         } else {
             console.log(responseLike.message)
         }
@@ -128,11 +120,9 @@ const doUnlikeTimeline = async (timeline_id: number) => {
         );
         console.log(responseUnlike)
         if (responseUnlike.success) {
-            likeStates[timeline_id].isLiked = false;
-            const item = props.timelines.filter(item => item.timeline_id == timeline_id)
-            item.at(0)!.is_liked = false
-            if(item.at(0)?.total_likes ?? 0 > 0) {
-                item.at(0)!.total_likes -= 1
+            timeline(timeline_id)!.is_liked = false
+            if (timeline(timeline_id)?.total_likes ?? 0 > 0) {
+                timeline(timeline_id)!.total_likes -= 1
             }
         } else {
             console.log(responseUnlike.message)
