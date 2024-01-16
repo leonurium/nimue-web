@@ -4,74 +4,31 @@
             <CardThreadsSkeleton />
         </div>
         <div v-else>
-            <div class="flex w-full">
-                <div class="flex items-center space-x-4">
-                    <UiAvatar class="h-10 w-10 rounded-full" :fallback="getInitials(timeline?.name ?? 'Netijen Curhat')" />
-                    <div class="space-y-2">
-                        <h1 class="h-4 text-base font-bold"> {{ timeline?.name }} </h1>
-                        <h5 class="h-4 text-xs"> {{ getTimeAgo(timeline?.timed ?? "") }} </h5>
-                    </div>
-                </div>
-                <div class="ml-auto">
-                    <IconMoreHorizontal />
-                </div>
-            </div>
-            <div class="w-full text-base pt-4 pb-4">
-                {{ timeline?.text_content }}
-            </div>
-            <div class="flex items-center gap-5">
-                <p class="text-sm text-gray-500">
-                    {{
-                        timeline?.total_likes +
-                        ((timeline?.total_likes ?? 0) > 1 ? " likes" : " like")
-                    }}
-                </p>
-                <p class="text-sm text-gray-500">
-                    {{
-                        timeline?.total_comments +
-                        ((timeline?.total_comments ?? 0) > 1 ? " replies" : " reply")
-                    }}
-                </p>
-            </div>
+            <CardThreads :timeline="timeline" compact />
+
+            <UiDivider class="pt-4 pb-4" />
+
+            <ReplyForm :timeline_id="timeline?.timeline_id ?? 0" @onSubmit="refreshComment"/>
 
             <UiDivider class="pt-4 pb-4" />
 
             <div v-if="comments.length > 0">
                 <UiContainer v-for="comment in comments" as="section" class="p-0 overflow-y-auto">
-                    <div class="flex w-full">
-                        <div class="flex items-center space-x-4">
-                            <UiAvatar class="h-10 w-10 rounded-full"
-                                :fallback="getInitials(comment.name)" />
-                            <div class="space-y-2">
-                                <h1 class="h-4 text-base font-bold">
-                                    {{ comment.name }}
-                                    <span class="text-xs font-normal text-gray-500 pl-1">
-                                        {{ getTimeAgo(comment.timed) }}
-                                    </span>
-                                </h1>
-                                <h1 class="text-base">
-                                    {{ comment.text_content }}
-                                </h1>
-                            </div>
-                        </div>
-                    </div>
-                    <UiDivider class="pt-4 pb-4" />
+                    <CommentView :commentData="comment"/>
                 </UiContainer>
             </div>
 
             <div v-else>
                 no comment
             </div>
-            <Observer v-else @intersect="loadMore"/>
-
+            <Observer @intersect="loadMore"/>
         </div>
-        <ReplyForm/>
 
     </UiContainer>
 </template>
 
 <script lang="ts" setup>
-import { type BaseResponse, type Timeline, type CommentsData, type Comment } from '@/types/timeline';
+import type { BaseResponse, Timeline, CommentsData, Comment } from '@/types/timeline';
 const base_url = useRuntimeConfig().public.base_api_url;
 const { timeline_id } = useRoute().params
 const itemPerPage = ref(10);
@@ -106,7 +63,6 @@ const getCommentByTimelineId = async () => {
             `${base_url}/comment/${timeline_id}/${page.value}/${itemPerPage.value}`,
             { method: 'GET' }
         );
-        console.log(responseComment)
         if (responseComment.success) {
             const data = responseComment.data as CommentsData
             comments.value = comments.value.concat(data.comments);
@@ -127,6 +83,12 @@ const loadMore = async () => {
         await getCommentByTimelineId();
     }
 };
+
+const refreshComment = async (newComment: any) => {
+    console.log(newComment)
+    const comment = newComment as Comment
+    comments.value.unshift(comment)
+}
 
 onBeforeMount(async () => {
     loading.value = true

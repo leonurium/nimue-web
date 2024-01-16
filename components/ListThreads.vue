@@ -2,38 +2,12 @@
     <div class="flex flex-col gap-10">
         <UiCard class="shadow-lg rounded-lg" v-for="timeline in timelines" :key="timeline.timeline_id">
             <div class="flex flex-col gap-5 p-6" v-if="!timeline.is_ads">
-                <div class="flex w-full">
-                    <div class="flex items-center space-x-4">
-                        <UiAvatar class="h-10 w-10 rounded-full" :fallback="getInitials(timeline.name)" />
-                        <div class="space-y-2">
-                            <h1 class="h-4 text-base font-bold"> {{ timeline.name }} </h1>
-                            <h5 class="h-4 text-xs"> {{ getTimeAgo(timeline.timed) }} </h5>
-                        </div>
-                    </div>
-                    <div class="ml-auto">
-                        <IconMoreHorizontal />
-                    </div>
-                </div>
-                <div class="w-full text-base">
-                    {{ timeline.text_content }}
-                </div>
-                <div class="flex items-center gap-2">
-                    <UiButton @click="buttonLikeClicked(timeline.timeline_id)" variant="ghost" class="rounded-full">
-                        <IconHeart :class="{
-                            'text-red-500': timeline.is_liked,
-                            'animate-pulse': likeStates[timeline.timeline_id]?.likeClicked ?? false
-                        }" />
-                        <span :class="{
-                            'animate-pulse': likeStates[timeline.timeline_id]?.likeClicked ?? false
-                        }">{{ timeline.total_likes }}</span>
-                    </UiButton>
-                    <UiButton @click="goToComment(timeline.timeline_id)" variant="ghost" class="rounded-full">
-                        <IconMessageCircle />{{ timeline.total_comments }}
-                    </UiButton>
-                    <div class="ml-auto">
-                        <IconShare />
-                    </div>
-                </div>
+                <CardThreads
+                :timeline="timeline"
+                :likeIsClicked="likeStates[timeline.timeline_id]?.likeClicked ?? false"
+                @onClickLike="buttonLikeClicked"
+                @onClickComment="goToComment"
+                />
             </div>
 
             <div v-else>
