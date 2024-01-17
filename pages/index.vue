@@ -28,10 +28,48 @@ const base_url = useRuntimeConfig().public.base_api_url;
 const device_id = ref('B6961C40-5D18-48FE-B06C-1314B34162CC')
 const itemPerPage = ref(10);
 const page = ref(1);
-const loading = ref(false);
+const loading = ref(true);
 const loadingMore = ref(false);
 const responseMessage = ref("Mau curhat apa?");
 const timelines = ref<Timeline[]>([]);
+
+const { getDeviceId } = useDevice()
+
+const registerDevice = async () => {
+    const deviceId = getDeviceId()
+    console.log(deviceId)
+    try {
+        const responseRegisterDevice = await $fetch<BaseResponse>(
+            `${base_url}/register/device/`,
+            {
+                method: 'POST',
+                body: {
+                    "device_id": deviceId
+                }
+            }
+        );
+        console.log(responseRegisterDevice);
+    } catch (error) {
+        console.log(error)
+    } finally {
+
+    }
+};
+
+
+const getPreference = async () => {
+    try {
+        const responsePreference = await $fetch<BaseResponse>(
+            `${base_url}/preference/`,
+            { method: 'GET' }
+        );
+        console.log(responsePreference);
+    } catch (error) {
+        console.log(error)
+    } finally {
+
+    }
+};
 
 const getTimelines = async () => {
     try {
@@ -70,6 +108,7 @@ onBeforeMount(async () => {
     loading.value = true
     try {
         await getTimelines()
+        await registerDevice()
     } catch (error) {
         responseMessage.value = `${error}`
         console.log(error)

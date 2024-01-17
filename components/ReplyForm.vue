@@ -20,7 +20,7 @@ const base_url = useRuntimeConfig().public.base_api_url;
 const device_id = ref('B6961C40-5D18-48FE-B06C-1314B34162CC');
 const user_name = "Netijen Curhat Test";
 const replyText = ref('');
-const emojis: String[] = ['🔥', '🙌', '👏', '😥', '😍', '😮', '😂'];
+const emojis: String[] = ['🍉', '🔥', '🙌', '👏', '😥', '😍', '😮', '😂'];
 
 const emits = defineEmits(['onSubmit'])
 

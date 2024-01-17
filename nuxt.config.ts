@@ -6,7 +6,8 @@ export default defineNuxtConfig({
         "@nuxtjs/color-mode",
         "@vueuse/nuxt",
         "nuxt-icon",
-        "nuxt-lucide-icons"
+        "nuxt-lucide-icons",
+        "@vee-validate/nuxt"
     ],
 
     tailwindcss: {

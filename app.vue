@@ -1,9 +1,17 @@
 <template>
-  <div>
-    <NuxtLoadingIndicator />
-    <NuxtLayout>
-      <NuxtPage />
-    </NuxtLayout>
-    <UiToastToaster />
-  </div>
+    <div>
+        <NuxtLoadingIndicator />
+        <NuxtLayout v-if="user">
+            <NuxtPage />
+        </NuxtLayout>
+        <AuthPage v-else />
+
+
+        <UiToastToaster />
+    </div>
 </template>
+
+<script lang="ts" setup>
+const { useAuthUser } = useAuth()
+const user = useAuthUser()
+</script>

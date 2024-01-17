@@ -20,9 +20,12 @@
 
 <script lang="ts" setup>
 import { type Comment } from '@/types/timeline';
-const props = defineProps<{
-    commentData: Comment
-}>();
+const props = defineProps({
+    commentData: {
+        type: Object as () => Comment,
+        required: true
+    }
+})
 
 </script>
 

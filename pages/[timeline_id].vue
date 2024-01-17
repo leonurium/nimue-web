@@ -35,7 +35,7 @@ const itemPerPage = ref(10);
 const page = ref(1);
 const timeline = ref<Timeline>()
 const comments = ref<Comment[]>([])
-const loading = ref(false)
+const loading = ref(true)
 const loadingMore = ref(false)
 
 const getTimelineById = async () => {
