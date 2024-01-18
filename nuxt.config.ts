@@ -44,6 +44,8 @@ export default defineNuxtConfig({
         public: {
             base_api_url: "https://nimueapi.ranggaleo.com"
             // base_api_url: "http://localhost:8888"
+            // 8.1.2
+            
         }
     },
 
