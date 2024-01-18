@@ -42,8 +42,8 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            // base_api_url: "https://nimueapi.ranggaleo.com"
-            base_api_url: "http://localhost:8888"
+            base_api_url: "https://nimueapi.ranggaleo.com"
+            // base_api_url: "http://localhost:8888"
         }
     },
 
