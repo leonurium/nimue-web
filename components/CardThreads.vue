@@ -13,7 +13,7 @@
                 <IconMoreHorizontal />
             </div>
         </div>
-        <div class="w-full text-base pt-4 pb-4">
+        <div class="w-full text-base text-justify pt-4 pb-4">
             {{ props.timeline?.text_content }}
         </div>
 
