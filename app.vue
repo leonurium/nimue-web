@@ -1,19 +1,30 @@
 <template>
     <div>
         <NuxtLoadingIndicator />
-        <NuxtLayout v-if="user">
-            <NuxtPage />
-        </NuxtLayout>
-        <AuthPage v-else />
-
+        <div v-if="isAuthLoading">
+            <NuxtLayout >
+                <SplashScreen />
+            </NuxtLayout>
+        </div>
+        <div v-else-if="user">
+            <NuxtLayout >
+                <NuxtPage />
+            </NuxtLayout>
+        </div>
+        <div v-else>
+            <NuxtLayout >
+                <AuthPage/>
+            </NuxtLayout>
+        </div>
 
         <UiToastToaster />
     </div>
 </template>
 
 <script lang="ts" setup>
-const { useAuthUser, initAuth } = useAuth()
+const { useAuthUser, initAuth, useAuthLoading } = useAuth()
 const user = useAuthUser()
+const isAuthLoading = useAuthLoading()
 
 onBeforeMount (() => {
     initAuth()

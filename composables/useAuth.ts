@@ -6,6 +6,7 @@ export default () => {
 
     const useAuthToken = () => useState('auth_token')
     const useAuthUser = () => useState('auth_user')
+    const useAuthLoading = () => useState('auth_loading', (() => true))
 
     const setToken = (newToken: string) => {
         const authToken = useAuthToken()
@@ -15,6 +16,11 @@ export default () => {
     const setUser = (newUser: User) => {
         const authUser = useAuthUser()
         authUser.value = newUser
+    }
+
+    const setIsAuthLoading = (value: boolean) => {
+        const authLoading = useAuthLoading()
+        authLoading.value = value
     }
 
     const login = (email: string, password: string) => {
@@ -29,7 +35,8 @@ export default () => {
                             'device_id': deviceId,
                             'email': email,
                             'password': password
-                        }
+                        },
+                        credentials: 'include'
                     }
                 );
                 if(response.success) {
@@ -47,13 +54,34 @@ export default () => {
         })
     };
 
+    const getUser = () => {
+        return new Promise(async(resolve, reject) => {
+            try {
+                const response = await useFetchApi(
+                    `${base_url}/user/me/`,
+                    { method: 'GET', credentials: 'include' }
+                );
+                if(response.success) {
+                    const user = response.data as User
+                    setUser(user)
+                    resolve(true)
+                } else {
+                    reject(response.message)
+                }
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
+    };
+
     const refreshToken = () => {
         return new Promise(async(resolve, reject) => {
             try {
                 const deviceId = getDeviceId();
                 const response = await $fetch<BaseResponse>(
                     `${base_url}/auth/refresh/`,
-                    { method: 'GET' }
+                    { method: 'GET', credentials: 'include' }
                 );
                 if(response.success) {
                     const data = response.data as RefreshTokenData
@@ -71,19 +99,25 @@ export default () => {
 
     const initAuth = () => {
         return new Promise(async(resolve, reject) => {
+            setIsAuthLoading(true)
             try {
                 await refreshToken()
+                await getUser()
                 resolve(true)
             } catch (error) {
                 console.log(error)
                 reject(error)
+            } finally {
+                setIsAuthLoading(false)
             }
         })
     };
 
     return {
+        useAuthLoading,
         login,
         useAuthUser,
+        useAuthToken,
         initAuth
     }
 }

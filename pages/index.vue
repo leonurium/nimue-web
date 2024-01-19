@@ -73,7 +73,7 @@ const getPreference = async () => {
 
 const getTimelines = async () => {
     try {
-        const responseTimeline = await $fetch<BaseResponse>(
+        const responseTimeline = await useFetchApi(
             `${base_url}/timeline/${device_id.value}/${page.value}/${itemPerPage.value}`,
             { method: 'GET' }
         );

@@ -14,6 +14,7 @@ type BaseDataResponse =
     Preference |
     BaseLoginData |
     RefreshTokenData |
+    User |
     null
 
 export interface BaseResponse {
