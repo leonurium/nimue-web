@@ -14,13 +14,16 @@
 
 <script lang="ts" setup>
 
-import type { BaseResponse } from '@/types/timeline';
+import type { BaseResponse, Preferences } from '@/types/timeline';
+import usePreferencesService from '~/composables/usePreferencesService';
 
 const base_url = useRuntimeConfig().public.base_api_url;
 const device_id = ref('B6961C40-5D18-48FE-B06C-1314B34162CC');
 const user_name = "Netijen Curhat Test";
 const replyText = ref('');
-const emojis: String[] = ['🍉', '🔥', '🙌', '👏', '😥', '😍', '😮', '😂'];
+
+const { getReplyEmojis } = usePreferencesService();
+const emojis: string[] = getReplyEmojis()
 
 const emits = defineEmits(['onSubmit'])
 

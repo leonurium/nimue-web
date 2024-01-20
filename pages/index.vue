@@ -23,12 +23,12 @@
 <script lang="ts" setup>
 import type { BaseResponse, Timeline, TimelinesData, User } from '@/types/timeline';
 import Observer from "@/components/Observer.vue";
+import usePreferencesService from '~/composables/usePreferencesService';
 
+const { getTimelines } = useTimelineService()
+const { getPreferences } = usePreferencesService()
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
-const { getTimelines } = useTimelineService()
-
-const base_url = useRuntimeConfig().public.base_api_url;
 const itemPerPage = ref(10);
 const page = ref(1);
 const loading = ref(true);
@@ -36,23 +36,9 @@ const loadingMore = ref(false);
 const responseMessage = ref("Mau curhat apa?");
 const timelines = ref<Timeline[]>([]);
 
-const getPreferences = async () => {
-    try {
-        const response = await useFetchApi(
-            `${base_url}/preferences/`,
-            { method: 'GET' }
-        );
-        
-    } catch (error) {
-        console.log(error)
-    } finally {
-
-    }
-};
-
 async function getListTimeline() {
     try {
-        await getTimelines(user.device_id, `${page.value}`, `${itemPerPage.value}`)
+        await getTimelines(user.user_id, `${page.value}`, `${itemPerPage.value}`)
             .then((result) => {
                 const data = result as TimelinesData
                 page.value = data.next_page
@@ -81,5 +67,6 @@ const loadMore = async () => {
 onBeforeMount(async () => {
     loading.value = true
     await getListTimeline()
+    await getPreferences()
 })
 </script>
