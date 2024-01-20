@@ -32,7 +32,7 @@
             </p>
         </div>
 
-        <div v-else class="flex items-center gap-2">
+        <div v-else class="flex items-center gap-1">
             <UiButton @click="likeClicked(props.timeline?.timeline_id ?? 0)" variant="ghost" class="rounded-full">
                 <IconHeart :class="{
                     'text-red-500': props.timeline?.is_liked,

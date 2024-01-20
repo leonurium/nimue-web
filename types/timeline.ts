@@ -11,7 +11,7 @@ type BaseDataResponse =
     Timeline |
     TimelinesData |
     CommentsData |
-    Preference |
+    Preferences |
     BaseLoginData |
     RefreshTokenData |
     User |
@@ -39,7 +39,7 @@ export interface User {
     name:       string;
 }
 
-export interface Preference {
+export interface Preferences {
     name:                       string;
     app_name:                   string;
     version:                    string;

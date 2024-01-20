@@ -54,6 +54,64 @@ export default () => {
         })
     };
 
+    const loginAsAnonymous = () => {
+        return new Promise(async(resolve, reject) => {
+            try {
+                const deviceId = getDeviceId();
+                const response = await $fetch<BaseResponse>(
+                    `${base_url}/login/anonymous/`,
+                    {
+                        method: 'POST',
+                        body: {
+                            'device_id': deviceId
+                        },
+                        credentials: 'include'
+                    }
+                );
+                if(response.success) {
+                    const data = response.data as BaseLoginData
+                    setToken(data.access_token)
+                    setUser(data.user)
+                    resolve(true)
+                } else {
+                    reject(response.message)
+                }
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
+    };
+
+    const registerAnonymous = () => {
+        return new Promise(async(resolve, reject) => {
+            try {
+                const deviceId = getDeviceId();
+                const response = await $fetch<BaseResponse>(
+                    `${base_url}/register/anonymous/`,
+                    {
+                        method: 'POST',
+                        body: {
+                            'device_id': deviceId
+                        },
+                        credentials: 'include'
+                    }
+                );
+                if(response.success) {
+                    const data = response.data as BaseLoginData
+                    setToken(data.access_token)
+                    setUser(data.user)
+                    resolve(true)
+                } else {
+                    reject(response.message)
+                }
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
+    };
+
     const getUser = () => {
         return new Promise(async(resolve, reject) => {
             try {
@@ -116,6 +174,8 @@ export default () => {
     return {
         useAuthLoading,
         login,
+        loginAsAnonymous,
+        registerAnonymous,
         useAuthUser,
         useAuthToken,
         initAuth

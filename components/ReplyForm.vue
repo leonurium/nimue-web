@@ -1,6 +1,6 @@
 <!-- ReplyForm.vue -->
 <template>
-    <div class="flex flex-row pl-12 pb-1 gap-2">
+    <div class="flex flex-row pl-12 pb-1 gap-1">
         <UiButton class="rounded-full h-8 w-8" v-for="(emoji, index) in emojis" @click="emojiClicked(index)"
             variant="ghost">{{ emoji }}
         </UiButton>

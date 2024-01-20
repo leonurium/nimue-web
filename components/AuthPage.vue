@@ -21,7 +21,9 @@
                             </Field>
                             <div class="flex flex-col gap-2">
                                 <UiButton type="submit">Login</UiButton>
-                                <UiButton variant="secondary"><IconVenetianMask/> Login As Anonymous</UiButton>
+                                <UiButton @click="loginAsAnonymousClicked" variant="secondary">
+                                    <IconVenetianMask /> Login As Anonymous
+                                </UiButton>
                             </div>
                         </UiCardContent>
                     </template>
@@ -34,7 +36,7 @@
 <script lang="ts" setup>
 import { z } from "zod";
 
-const { login } = useAuth()
+const { login, loginAsAnonymous, registerAnonymous } = useAuth()
 const loading = ref(false);
 
 const { handleSubmit } = useForm({
@@ -57,12 +59,41 @@ const { handleSubmit } = useForm({
 const onSubmit = handleSubmit(async (values) => {
     loading.value = true
     try {
-        const loginResponse = await login(values.email, values.password)
+        await login(values.email, values.password)
 
     } catch (error) {
         console.log(error)
     }
 });
+
+async function loginAsAnonymousClicked() {
+    try {
+        await loginAsAnonymous()
+            .then((result) => {
+                console.log("login as anonymous")
+            })
+            .catch( async (error) => {
+                console.log(error)
+                await registerAnonymous()
+                    .then( async (result) => {
+                        console.log("register as anonymous")
+
+                        await loginAsAnonymous()
+                            .catch((error) => {
+                                console.log(error)
+                            })
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
+            })
+            .finally(() => {
+                //do something
+            })
+    } catch (error) {
+        console.log(error)
+    }
+}
 </script>
 
 <style></style>
