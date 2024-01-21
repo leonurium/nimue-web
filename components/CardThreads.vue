@@ -10,7 +10,9 @@
                 </div>
             </div>
             <div class="ml-auto">
-                <IconMoreHorizontal />
+                <UiButton @click="handleMore(props.timeline?.timeline_id ?? 0)" variant="ghost" class="rounded-full">
+                    <IconMoreHorizontal />
+                </UiButton>
             </div>
         </div>
         <div class="w-full text-base text-justify pt-4 pb-4">
@@ -33,7 +35,7 @@
         </div>
 
         <div v-else class="flex items-center gap-1">
-            <UiButton @click="likeClicked(props.timeline?.timeline_id ?? 0)" variant="ghost" class="rounded-full">
+            <UiButton @click="handleLike(props.timeline?.timeline_id ?? 0)" variant="ghost" class="rounded-full">
                 <IconHeart :class="{
                     'text-red-500': props.timeline?.is_liked,
                     'animate-pulse': props.likeIsClicked
@@ -42,11 +44,16 @@
                     'animate-pulse': props.likeIsClicked
                 }">{{ props.timeline?.total_likes }}</span>
             </UiButton>
-            <UiButton @click="commentClicked(props.timeline?.timeline_id ?? 0)" variant="ghost" class="rounded-full">
+            <UiButton @click="handleReply(props.timeline?.timeline_id ?? 0)" variant="ghost" class="rounded-full">
                 <IconMessageCircle />{{ props.timeline?.total_comments }}
             </UiButton>
             <div class="ml-auto">
-                <IconShare />
+                <ShareDialog
+                    :timeline_id="props.timeline?.timeline_id ?? 0"
+                    :url-to-share="urlToShare"
+                    :content-to-share="contentToShare"
+                    @onCopyContent="handleShare"
+                />
             </div>
         </div>
     </div>
@@ -71,27 +78,31 @@ const props = defineProps({
     }
 })
 
+const urlToShare = `${window.location.origin}/${props.timeline?.timeline_id}`
+const contentToShare = props.timeline?.text_content
+
 const emits = defineEmits([
     'onClickLike',
-    'onClickComment',
+    'onClickReply',
     'onClickShare',
     'onClickMore'
 ])
 
-// const paddingTextContentClasses = computed(() => {
-//     if (props.compact) {
-//         return `pt-4 pb-4`
-//     } else {
-//         return `pt-4 pb-4`
-//     }
-// })
 
-function likeClicked(timeline_id: number) {
+function handleLike(timeline_id: number) {
     emits('onClickLike', timeline_id)
 }
 
-function commentClicked(timeline_id: number) {
-    emits('onClickComment', timeline_id)
+function handleReply(timeline_id: number) {
+    emits('onClickReply', timeline_id)
+}
+
+function handleShare(timeline_id: number) {
+    emits('onClickShare', timeline_id)
+}
+
+function handleMore(timeline_id: number) {
+    emits('onClickMore', timeline_id)
 }
 
 </script>

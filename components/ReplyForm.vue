@@ -22,7 +22,7 @@ const device_id = ref('B6961C40-5D18-48FE-B06C-1314B34162CC');
 const user_name = "Netijen Curhat Test";
 const replyText = ref('');
 
-const { getReplyEmojis } = usePreferencesService();
+const { getReplyEmojis, getPreferences } = usePreferencesService();
 const emojis: string[] = getReplyEmojis()
 
 const emits = defineEmits(['onSubmit'])
@@ -73,6 +73,10 @@ const addNewReply = async (device_id: string, timeline_id: number, name: string,
         replyText.value = '';
     }
 }
+
+onBeforeMount(async () => {
+    await getPreferences()
+})
 </script>
 
 <style scoped>

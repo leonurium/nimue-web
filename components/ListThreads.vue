@@ -2,8 +2,14 @@
     <div class="flex flex-col gap-10">
         <UiCard class="shadow-lg rounded-lg" v-for="timeline in timelines" :key="timeline.timeline_id">
             <div class="flex flex-col gap-5 p-6" v-if="!timeline.is_ads">
-                <CardThreads :timeline="timeline" :likeIsClicked="likeStates[timeline.timeline_id]?.likeClicked ?? false"
-                    @onClickLike="buttonLikeClicked" @onClickComment="goToComment" />
+                <CardThreads
+                    :timeline="timeline"
+                    :likeIsClicked="likeStates[timeline.timeline_id]?.likeClicked ?? false"
+                    @onClickLike="handleLike"
+                    @onClickReply="handleReply"
+                    @onClickShare="handleShare"
+                    @onClickMore="handleMore"
+                />
             </div>
 
             <div v-else>
@@ -15,7 +21,7 @@
 
 <script lang="ts" setup>
 import type {Timeline, User } from '@/types/timeline';
-const { doLikeTimeline, doUnlikeTimeline } = useTimelineService()
+const { doLikeTimeline, doUnlikeTimeline, doShareTimeline } = useTimelineService()
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
 const likeStates = reactive<{ [key: number]: { likeClicked: boolean } }>({});
@@ -33,15 +39,29 @@ const timeline = (timeline_id: number) => {
     return item.at(0)
 }
 
-function goToComment(timeline_id: number) {
+function handleMore(timeline_id: number) {
+    const t = timeline(timeline_id) as Timeline
+
+    if(t.user_id != user.user_id) {
+        // not owner of timeline
+        // able to send chat and report
+    } else {
+        // able to delete the timeline
+    }
+}
+
+function handleShare(timeline_id: number) {
+    doShareTimeline(user.user_id, timeline_id)
+        .catch((error) => {
+            console.log(error)
+        })
+}
+
+function handleReply(timeline_id: number) {
     navigateTo(`/${timeline_id}`)
 }
 
-function buttonShareClicked() {
-    
-}
-
-function buttonLikeClicked(timeline_id: number) {
+function handleLike(timeline_id: number) {
     if ((likeStates[timeline_id]?.likeClicked ?? false) == false) {
         if (!likeStates[timeline_id]) {
             likeStates[timeline_id] = {
