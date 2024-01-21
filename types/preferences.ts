@@ -10,5 +10,5 @@ export interface Preferences {
     contact_whatsapp:           string;
     contact_instagram:          string;
     reply_emojis:               string[];
-    report_reasons:             string[];
+    report_reasons:             [string];
 }

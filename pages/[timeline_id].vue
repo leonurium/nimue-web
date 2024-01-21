@@ -37,7 +37,7 @@ import type { CommentsData, Comment } from '~/types/comment';
 
 const { getTimelineById } = useTimelineService()
 const { getCommentByTimelineId } = useCommentService()
-const { getAppName, getPreferences } = usePreferencesService()
+const { getAppName } = usePreferencesService()
 const { timeline_id } = useRoute().params
 const itemPerPage = ref(10);
 const page = ref(1);
@@ -45,7 +45,6 @@ const timeline = ref<Timeline>()
 const comments = ref<Comment[]>([])
 const loading = ref(true)
 const loadingMore = ref(false)
-const appName = ref('')
 
 const loadMore = async () => {
     if (!loadingMore.value) {
@@ -73,12 +72,7 @@ const refreshComment = async (newComment: any) => {
 
 onBeforeMount(() => {
     loading.value = true
-    
-    getPreferences()
-        .then(() => {
-            appName.value = getAppName()
-        })
-        
+
     getTimelineById(Number(timeline_id))
         .then((result) => {
             const data = result as Timeline
@@ -94,11 +88,11 @@ onBeforeMount(() => {
 
 useSeoMeta({
     description: timeline.value?.text_content,
-    ogTitle: `${timeline.value?.name} - ${appName.value}`,
+    ogTitle: `${timeline.value?.name} - ${getAppName()}`,
     ogDescription: timeline.value?.text_content,
     ogImage: '[og:image]',
     ogUrl: window.location.href,
-    twitterTitle: `${timeline.value?.name} - ${appName.value}`,
+    twitterTitle: `${timeline.value?.name} - ${getAppName()}`,
     twitterDescription: timeline.value?.text_content,
     twitterImage: '[twitter:image]',
     twitterCard: 'summary'

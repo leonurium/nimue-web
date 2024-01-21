@@ -49,13 +49,13 @@ export default () => {
     const getToastTitle = (type: TypeMessage) => {
         switch (type) {
             case TypeMessage.action:
-                return TypeMessage.action.toUpperCase
+                return TypeMessage.action.toUpperCase()
             case TypeMessage.info:
-                return TypeMessage.info.toUpperCase
+                return TypeMessage.info.toUpperCase()
             case TypeMessage.success:
-                return TypeMessage.success.toUpperCase
+                return TypeMessage.success.toUpperCase()
             case TypeMessage.warning:
-                return TypeMessage.warning.toUpperCase
+                return TypeMessage.warning.toUpperCase()
             case TypeMessage.destructive:
                 return "ERROR"
         }

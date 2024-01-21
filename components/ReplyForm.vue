@@ -17,10 +17,10 @@ import type { User } from '~/types/user';
 import usePreferencesService from '~/composables/usePreferencesService';
 
 const { addNewReply } = useCommentService()
-const { getReplyEmojis, getPreferences } = usePreferencesService()
+const { getReplyEmojis } = usePreferencesService()
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
-const emojis = ref<string[]>([])
+const emojis: string[] = getReplyEmojis()
 const replyText = ref('')
 
 const emits = defineEmits(['onSubmit'])
@@ -33,7 +33,7 @@ const props = defineProps({
 })
 
 function emojiClicked(index: number) {
-    replyText.value += emojis.value[index]
+    replyText.value += emojis[index]
 }
 
 const submitReply = () => {
@@ -50,14 +50,6 @@ const submitReply = () => {
             replyText.value = ""
         })
 };
-
-onBeforeMount(async () => {
-    await getPreferences()
-        .then(() => {
-            emojis.value = getReplyEmojis()
-        })
-    
-})
 </script>
 
 <style scoped>

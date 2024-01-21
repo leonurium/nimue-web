@@ -27,7 +27,6 @@ import Observer from "@/components/Observer.vue"
 import usePreferencesService from '~/composables/usePreferencesService'
 
 const { getTimelines } = useTimelineService()
-const { getPreferences } = usePreferencesService()
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
 const itemPerPage = ref(10);
@@ -68,6 +67,5 @@ const loadMore = async () => {
 onBeforeMount(async () => {
     loading.value = true
     await getListTimeline()
-    await getPreferences()
 })
 </script>

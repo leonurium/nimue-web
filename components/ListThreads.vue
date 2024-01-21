@@ -54,7 +54,7 @@ function handleSendChat(timeline_id: number) {
 }
 
 function hanldeReport(timeline_id: number) {
-    console.log(timeline_id)
+    navigateTo(`/report/${timeline_id}`)
 }
 
 function handleDelete(timeline_id: number) {

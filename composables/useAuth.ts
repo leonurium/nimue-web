@@ -1,8 +1,10 @@
-import type { BaseLoginData, BaseResponse, RefreshTokenData, User } from "~/types/timeline"
+import type { BaseResponse, BaseLoginData, RefreshTokenData } from "~/types";
+import type { User } from "~/types/user";
 
 export default () => {
     const base_url = useRuntimeConfig().public.base_api_url;
     const { getDeviceId } = useDevice();
+    const { getPreferences } = usePreferencesService();
 
     const useAuthToken = () => useState('auth_token')
     const useAuthUser = () => useState('auth_user')
@@ -161,6 +163,7 @@ export default () => {
             try {
                 await refreshToken()
                 await getUser()
+                await getPreferences()
                 resolve(true)
             } catch (error) {
                 console.log(error)

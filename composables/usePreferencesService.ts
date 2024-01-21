@@ -39,9 +39,15 @@ export default () => {
         return preferences.reply_emojis
     }
 
+    function getReportReasons(): [string] {
+        const preferences = useAppPreferences().value as Preferences
+        return preferences.report_reasons
+    }
+
     return {
         getPreferences,
         getAppName,
-        getReplyEmojis
+        getReplyEmojis,
+        getReportReasons
     }
 }
