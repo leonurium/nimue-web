@@ -3,6 +3,7 @@
         <div class="flex w-full">
             <div class="flex items-center space-x-4">
                 <UiAvatar class="h-10 w-10 rounded-full"
+                    :class="isOwnerThread ? 'border border-sky-400' : ''"
                     :fallback="getInitials(props.timeline?.name ?? 'Netijen Curhat')" />
                 <div class="space-y-2">
                     <h1 class="h-4 text-base font-bold"> {{ props.timeline?.name }} </h1>
@@ -10,9 +11,13 @@
                 </div>
             </div>
             <div class="ml-auto">
-                <UiButton @click="handleMore(props.timeline?.timeline_id ?? 0)" variant="ghost" class="rounded-full">
-                    <IconMoreHorizontal />
-                </UiButton>
+                <MoreDialog
+                    :timeline_id="props.timeline?.timeline_id ?? 0"
+                    :is-owner-thread="props.isOwnerThread ?? false"
+                    @on-click-send-chat="handleSendChat"
+                    @on-click-report="hanldeReport"
+                    @on-click-delete="handleDelete"
+                />
             </div>
         </div>
         <div class="w-full text-base text-justify pt-4 pb-4">
@@ -72,6 +77,11 @@ const props = defineProps({
         default: false,
         required: false
     },
+    isOwnerThread: {
+        type: Boolean,
+        default: false,
+        required: false
+    },
     compact: {
         type: Boolean,
         required: false
@@ -85,7 +95,9 @@ const emits = defineEmits([
     'onClickLike',
     'onClickReply',
     'onClickShare',
-    'onClickMore'
+    'onClickSendChat',
+    'onClickReport',
+    'onClickDelete'
 ])
 
 
@@ -101,8 +113,16 @@ function handleShare(timeline_id: number) {
     emits('onClickShare', timeline_id)
 }
 
-function handleMore(timeline_id: number) {
-    emits('onClickMore', timeline_id)
+function handleSendChat(timeline_id: number) {
+    emits('onClickSendChat', timeline_id)
+}
+
+function hanldeReport(timeline_id: number) {
+    emits('onClickReport', timeline_id)
+}
+
+function handleDelete(timeline_id: number) {
+    emits('onClickDelete', timeline_id)
 }
 
 </script>

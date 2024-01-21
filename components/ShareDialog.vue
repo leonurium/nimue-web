@@ -12,22 +12,16 @@
                 <div class="flex items-center space-x-2">
                     <div class="grid flex-1 gap-2">
                         <UiLabel for="link" class="sr-only"> Link </UiLabel>
-                        <UiTextarea
-                            v-if="(props.contentToShare?.length ?? 0) > 32"
-                            id="link"
-                            :model-value="props.contentToShare ?? ''"
-                            readOnly
-                        />
-                        <UiInput v-else
-                            id="link"
-                            :model-value="props.contentToShare ?? ''"
-                            readOnly
-                        />
+                        <UiTextarea v-if="(props.contentToShare?.length ?? 0) > 32" id="link"
+                            :model-value="props.contentToShare ?? ''" readOnly />
+                        <UiInput v-else id="link" :model-value="props.contentToShare ?? ''" readOnly />
                     </div>
-                    <UiButton @click="copyValue" type="submit" size="icon" class="px-3">
-                        <span class="sr-only">Copy</span>
-                        <IconCopy class="h-4 w-4"/>
-                    </UiButton>
+                    <UiDialogClose as-child>
+                        <UiButton @click="copyValue" type="submit" size="icon" class="px-3">
+                            <span class="sr-only">Copy</span>
+                            <IconCopy class="h-4 w-4" />
+                        </UiButton>
+                    </UiDialogClose>
                 </div>
             </template>
             <template #footer>
@@ -42,8 +36,6 @@
 </template>
   
 <script lang="ts" setup>
-import { number } from 'zod';
-
 
 const props = defineProps({
     timeline_id: {

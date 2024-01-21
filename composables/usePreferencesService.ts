@@ -1,4 +1,4 @@
-import type { Preferences } from "~/types/timeline";
+import type { Preferences } from "~/types/preferences";
 
 export default () => {
     const base_url = useRuntimeConfig().public.base_api_url;
@@ -29,6 +29,11 @@ export default () => {
         })
     };
 
+    function getAppName(): string {
+        const preferences = useAppPreferences().value as Preferences
+        return preferences.app_name
+    }
+
     function getReplyEmojis(): string[] {
         const preferences = useAppPreferences().value as Preferences
         return preferences.reply_emojis
@@ -36,6 +41,7 @@ export default () => {
 
     return {
         getPreferences,
+        getAppName,
         getReplyEmojis
     }
 }

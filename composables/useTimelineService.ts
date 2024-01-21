@@ -1,4 +1,4 @@
-import type { TimelinesData } from "~/types/timeline";
+import type { Timeline, TimelinesData } from "~/types/timeline";
 
 export default () => {
     const base_url = useRuntimeConfig().public.base_api_url;
@@ -21,6 +21,25 @@ export default () => {
             }
         })
     };
+
+    const getTimelineById = async (timeline_id: number) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await useFetchApi(
+                    `${base_url}/timeline/${timeline_id}`,
+                    { method: 'GET' }
+                );
+                if (response.success) {
+                    const data = response.data as Timeline
+                    resolve(data)
+                } else {
+                    reject(response.message)
+                }
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
 
     const doLikeTimeline = async (user_id: number, timeline_id: number) => {
         return new Promise(async (resolve, reject) => {
@@ -94,10 +113,32 @@ export default () => {
         })
     }
 
+    const deleteTimeline = async (timeline_id: number) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await useFetchApi(
+                    `${base_url}/timeline/delete/${timeline_id}`,
+                    {
+                        method: 'DELETE'
+                    }
+                );
+                if (response.success) {
+                    resolve(true)
+                } else {
+                    reject(response.message)
+                }
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
     return {
         getTimelines,
+        getTimelineById,
         doLikeTimeline,
         doUnlikeTimeline,
-        doShareTimeline
+        doShareTimeline,
+        deleteTimeline
     }
 }

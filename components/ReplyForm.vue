@@ -6,24 +6,22 @@
         </UiButton>
     </div>
     <form @submit.prevent="submitReply" class="flex items-center gap-2">
-        <UiAvatar class="h-10 w-10 rounded-full" :fallback="getInitials('Netijen Curhat')" />
+        <UiAvatar class="h-10 w-10 rounded-full" :fallback="getInitials(user.name)" />
         <UiInput v-model="replyText" class="rounded-full max-w-2xl" placeholder="mau bales apa?" required></UiInput>
         <UiButton type="submit" class="rounded-full">Post</UiButton>
     </form>
 </template>
 
 <script lang="ts" setup>
-
-import type { BaseResponse, Preferences } from '@/types/timeline';
+import type { User } from '~/types/user';
 import usePreferencesService from '~/composables/usePreferencesService';
 
-const base_url = useRuntimeConfig().public.base_api_url;
-const device_id = ref('B6961C40-5D18-48FE-B06C-1314B34162CC');
-const user_name = "Netijen Curhat Test";
-const replyText = ref('');
-
-const { getReplyEmojis, getPreferences } = usePreferencesService();
-const emojis: string[] = getReplyEmojis()
+const { addNewReply } = useCommentService()
+const { getReplyEmojis, getPreferences } = usePreferencesService()
+const { useAuthUser } = useAuth()
+const user = useAuthUser().value as User
+const emojis = ref<string[]>([])
+const replyText = ref('')
 
 const emits = defineEmits(['onSubmit'])
 
@@ -35,47 +33,30 @@ const props = defineProps({
 })
 
 function emojiClicked(index: number) {
-    replyText.value += emojis[index]
+    replyText.value += emojis.value[index]
 }
 
 const submitReply = () => {
     // Handle the reply submission logic here
     console.log('Submitted:', replyText.value);
-    addNewReply(device_id.value, props.timeline_id, user_name, replyText.value)
+    addNewReply(user, props.timeline_id, replyText.value)
+        .then((result) => {
+            emits("onSubmit", result)
+        })
+        .catch((error) => {
+            console.log(error)
+        })
+        .finally(() => {
+            replyText.value = ""
+        })
 };
-
-const addNewReply = async (device_id: string, timeline_id: number, name: string, text_content: string) => {
-    const params_body = {
-        'device_id': device_id,
-        'timeline_id': Number(timeline_id ?? 0),
-        'name': name,
-        'text_content': text_content,
-        'comment_id': 0,
-        'timed': useNow().value.toString()
-    }
-
-    try {
-        const responseReply = await $fetch<BaseResponse>(
-            `${base_url}/comment/new/`,
-            {
-                method: 'POST',
-                body: params_body
-            }
-        );
-        if (responseReply.success) {
-            emits('onSubmit', params_body)
-        } else {
-            console.log(responseReply.message)
-        }
-    } catch (error) {
-        console.log(error)
-    } finally {
-        replyText.value = '';
-    }
-}
 
 onBeforeMount(async () => {
     await getPreferences()
+        .then(() => {
+            emojis.value = getReplyEmojis()
+        })
+    
 })
 </script>
 
