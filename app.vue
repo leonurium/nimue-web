@@ -2,17 +2,17 @@
     <div>
         <NuxtLoadingIndicator />
         <div v-if="isAuthLoading">
-            <NuxtLayout >
+            <NuxtLayout>
                 <SplashScreen />
             </NuxtLayout>
         </div>
         <div v-else-if="user">
-            <NuxtLayout >
+            <NuxtLayout :user="user">
                 <NuxtPage />
             </NuxtLayout>
         </div>
         <div v-else>
-            <NuxtLayout >
+            <NuxtLayout>
                 <AuthPage/>
             </NuxtLayout>
         </div>

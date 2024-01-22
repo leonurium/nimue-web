@@ -1,4 +1,4 @@
-import type { BaseResponse } from "~/types/timeline"
+import type { BaseResponse } from "~/types";
 
 export default (url: string, options?: object, headers?: object) => {
     const { useAuthToken } = useAuth()

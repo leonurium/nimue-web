@@ -18,7 +18,12 @@
                 </UiFormItem>
             </Field>
             <div class="mt-6">
-                <UiButton variant="destructive" type="submit">Report</UiButton>
+                <UiButton
+                    variant="destructive"
+                    type="submit"
+                    :disabled="loadingReport"
+                >Report
+                </UiButton>
             </div>
         </form>
     </div>
@@ -39,6 +44,7 @@ const { showMessage } = useMessage()
 const user = useAuthUser().value as User
 const timeline = ref<Timeline>()
 const reasons: [string] = getReportReasons()
+const loadingReport = ref(false)
 
 const { handleSubmit } = useForm({
     validationSchema: toTypedSchema(
@@ -52,7 +58,7 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit( async (values) => {
-    console.log(values)
+    loadingReport.value = true
     await report(
         user.user_id,
         timeline.value?.user_id ?? 0,
@@ -68,6 +74,9 @@ const onSubmit = handleSubmit( async (values) => {
         })
         .catch((error) => {
             showMessage(error, TypeMessage.destructive)
+        })
+        .finally(() => {
+            loadingReport.value = false
         })
 });
 
