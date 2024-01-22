@@ -12,7 +12,11 @@
                     >
                         <IconSunMedium class="h-4 w-4"/>
                     </UiButton>
-                    <UiButton v-if="user" @click="handleNewPost" size="sm">
+                    <UiButton
+                        v-if="user"
+                        @click="handleNewPost"
+                        size="sm"
+                        >
                         New Post
                     </UiButton>
                     <UiButton v-if="user" @click="" variant="secondary" size="sm">
@@ -22,6 +26,16 @@
             </UiContainer>
         </UiNavbar>
         <slot />
+        <BottomNavbar class="max-w-2xl mx-auto rounded-full" sticky>
+            <UiContainer class="flex h-14 items-center justify-around">
+                <NuxtLink to="/">
+                    <IconHome/>
+                </NuxtLink>
+                <NuxtLink to="/chats/">
+                    <IconMessageCircle/>
+                </NuxtLink>
+            </UiContainer>
+        </BottomNavbar>
     </div>
 </template>
   

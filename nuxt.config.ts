@@ -43,9 +43,9 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             app_name: "Netijen Curhat",
-            // base_api_url: "https://nimue-api.ranggaleo.com"
+            base_api_url: "https://nimue-api.ranggaleo.com"
             // base_api_url: "https://vast-lamb-smooth.ngrok-free.app/"
-            base_api_url: "http://localhost:8888"
+            // base_api_url: "http://localhost:8888"
             // 8.1.2
             
         }
