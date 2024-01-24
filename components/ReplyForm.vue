@@ -6,7 +6,11 @@
         </UiButton>
     </div>
     <form @submit.prevent="submitReply" class="flex items-center gap-2">
-        <UiAvatar class="h-10 w-10 rounded-full" :fallback="getInitials(user.name)" />
+        <UiAvatar
+            class="h-10 w-10 rounded-full"
+            :src="user.avatar"
+            :fallback="getInitials(user.name)"
+        />
         <UiInput v-model="replyText" class="rounded-full max-w-2xl" placeholder="mau bales apa?" required></UiInput>
         <UiButton type="submit" class="rounded-full">Post</UiButton>
     </form>

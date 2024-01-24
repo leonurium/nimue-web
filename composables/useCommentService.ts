@@ -30,6 +30,7 @@ export default () => {
                 'timeline_id': timeline_id,
                 'name': user.name,
                 'text_content': text_content,
+                'avatar': user.avatar,
                 'comment_id': 0,
                 'timed': useNow().value.toString()
             }
