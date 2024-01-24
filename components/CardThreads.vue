@@ -4,6 +4,7 @@
             <div class="flex items-center space-x-4">
                 <UiAvatar class="h-10 w-10 rounded-full"
                     :class="isOwnerThread ? 'border border-sky-400' : ''"
+                    :src="props.timeline?.avatar ?? ''"
                     :fallback="getInitials(props.timeline?.name ?? 'Netijen Curhat')" />
                 <div class="space-y-2">
                     <h1 class="h-4 text-base font-bold"> {{ props.timeline?.name }} </h1>

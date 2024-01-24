@@ -1,5 +1,5 @@
 <template>
-    <UiContainer as="section" class="max-w-2xl py-5">
+    <UiContainer as="section" class="max-w-2xl h-screen py-5">
         <UiCardContent as="form" @submit="onSubmit" class="flex flex-col gap-4">
             <Field v-slot="{ componentField }" name="text_content">
                 <UiFormItem label="Mau Curhat Apa?">

@@ -21,7 +21,7 @@
     );
   
     const styles = tv({
-      base: "z-20 border border-slate-500 bg-background/90 backdrop-blur",
+      base: "z-20 h-14 border border-slate-500 shadow-lg bg-background/90 backdrop-blur",
       variants: {
         sticky: {
           true: "sticky bottom-3",

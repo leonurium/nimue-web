@@ -1,7 +1,11 @@
 <template>
     <div class="flex w-full">
         <div class="flex items-center space-x-4">
-            <UiAvatar class="h-10 w-10 rounded-full" :fallback="getInitials(props.commentData.name)" />
+            <UiAvatar
+                class="h-10 w-10 rounded-full"
+                :src="props.commentData.avatar"
+                :fallback="getInitials(props.commentData.name)"
+            />
             <div class="space-y-2">
                 <h1 class="h-4 text-base font-bold">
                     {{ props.commentData.name }}
@@ -19,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type Comment } from '@/types/timeline';
+import type { Comment } from '~/types/comment';
 const props = defineProps({
     commentData: {
         type: Object as () => Comment,

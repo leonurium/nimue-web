@@ -11,6 +11,7 @@ export interface Comment {
     device_id:      string;
     name:           string;
     text_content:   string;
+    avatar:         string;
     timed:          string;
     created_at:     string;
     updated_at:     string;

@@ -1,5 +1,5 @@
 <template>
-    <UiContainer class="max-w-2xl p-6">
+    <UiContainer class="max-w-2xl h-screen p-6">
         <div v-if="loading">
             <CardThreadsSkeleton />
         </div>

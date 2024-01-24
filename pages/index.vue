@@ -1,5 +1,5 @@
 <template>
-    <UiContainer as="section" class="max-w-2xl py-5 overflow-y-auto">
+    <UiContainer as="section" class="max-w-2xl h-screen py-5 overflow-y-auto">
         <div v-if="loading && !loadingMore">
             <CardThreadsSkeleton />
         </div>
