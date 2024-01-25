@@ -1,10 +1,9 @@
 <!-- pages/index.vue -->
 <template>
     <div>
-        <Chat />
     </div>
 </template>
   
-<script setup>
+<script lang="ts" setup>
 
 </script>
