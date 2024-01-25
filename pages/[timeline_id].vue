@@ -8,7 +8,7 @@
 
             <UiDivider class="pt-4 pb-4" />
 
-            <ReplyForm :timeline_id="timeline?.timeline_id ?? 0" @onSubmit="refreshComment" />
+            <ReplyForm :user="user" @onSubmit="handleRepy" />
 
             <UiDivider class="pt-4 pb-4" />
 
@@ -32,12 +32,16 @@
 </template>
 
 <script lang="ts" setup>
+import type { User } from '~/types/user';
 import type { Timeline } from '@/types/timeline';
 import type { CommentsData, Comment } from '~/types/comment';
 
 const { getTimelineById } = useTimelineService()
 const { getCommentByTimelineId } = useCommentService()
 const { getAppName } = usePreferencesService()
+const { addNewReply } = useCommentService()
+const { useAuthUser } = useAuth()
+const user = useAuthUser().value as User
 const { timeline_id } = useRoute().params
 const itemPerPage = ref(10);
 const page = ref(1);
@@ -64,10 +68,16 @@ const loadMore = async () => {
     }
 };
 
-const refreshComment = async (newComment: any) => {
-    console.log(newComment)
-    const comment = newComment as Comment
-    comments.value.unshift(comment)
+const handleRepy = async (replyText: string) => {
+    await addNewReply(user, timeline.value?.timeline_id ?? 1, replyText)
+        .then((result) => {
+            console.log(result)
+            const comment = result as Comment
+            comments.value.unshift(comment)
+        })
+        .catch((error) => {
+            console.log(error)
+        })
 }
 
 onBeforeMount(() => {

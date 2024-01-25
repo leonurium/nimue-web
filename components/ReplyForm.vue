@@ -8,11 +8,17 @@
     <form @submit.prevent="submitReply" class="flex items-center gap-2">
         <UiAvatar
             class="h-10 w-10 rounded-full"
-            :src="user.avatar"
-            :fallback="getInitials(user.name)"
+            :src="props.user.avatar"
+            :fallback="getInitials(props.user.name)"
         />
-        <UiInput v-model="replyText" class="rounded-full max-w-2xl" placeholder="mau bales apa?" required></UiInput>
-        <UiButton type="submit" class="rounded-full">Post</UiButton>
+        <UiInput
+            @update:model-value="handleInputUpdateModelValue"
+            v-model="replyText"
+            class="rounded-full max-w-2xl"
+            placeholder="mau bales apa?"
+            required
+        />
+        <UiButton type="submit" class="rounded-full">Send</UiButton>
     </form>
 </template>
 
@@ -20,18 +26,17 @@
 import type { User } from '~/types/user';
 import usePreferencesService from '~/composables/usePreferencesService';
 
-const { addNewReply } = useCommentService()
 const { getReplyEmojis } = usePreferencesService()
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
 const emojis: string[] = getReplyEmojis()
 const replyText = ref('')
 
-const emits = defineEmits(['onSubmit'])
+const emits = defineEmits(['onSubmit', 'onKeypress'])
 
 const props = defineProps({
-    timeline_id: {
-        type: Number,
+    user: {
+        type: Object as () => User,
         required: true
     }
 })
@@ -40,19 +45,13 @@ function emojiClicked(index: number) {
     replyText.value += emojis[index]
 }
 
+const handleInputUpdateModelValue = (value: string) => {
+    emits('onKeypress', value)
+}
+
 const submitReply = () => {
-    // Handle the reply submission logic here
-    console.log('Submitted:', replyText.value);
-    addNewReply(user, props.timeline_id, replyText.value)
-        .then((result) => {
-            emits("onSubmit", result)
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-        .finally(() => {
-            replyText.value = ""
-        })
+    emits('onSubmit', replyText.value)
+    replyText.value = ""
 };
 </script>
 

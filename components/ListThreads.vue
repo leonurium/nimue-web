@@ -50,7 +50,9 @@ const getTimelineById = (timeline_id: number) => {
 }
 
 function handleSendChat(timeline_id: number) {
-    console.log(timeline_id)
+    const timeline = getTimelineById(timeline_id)
+    const userId = timeline?.user_id ?? 1
+    navigateTo(`/chats/${userId}`)
 }
 
 function hanldeReport(timeline_id: number) {
