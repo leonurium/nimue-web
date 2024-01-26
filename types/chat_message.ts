@@ -8,6 +8,11 @@ export interface ChatMessage {
     is_typing:      boolean;
 }
 
+export interface ChatRoom {
+    room_id:    string;
+    users:      User[];
+}
+
 export interface ContentMessage {
     type: TypeContentMessage;
 }

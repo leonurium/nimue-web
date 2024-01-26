@@ -36,7 +36,7 @@
 import {
     type ContentMessage,
     TypeContentMessage,
-TextMessage
+    TextMessage
 } from '~/types/chat_message';
 
 const props = defineProps({
@@ -51,6 +51,10 @@ const props = defineProps({
     avatar: {
         type: String,
         required: false
+    },
+    timestamp: {
+        type: Date,
+        required: true
     },
     is_sender: {
         type: Boolean,

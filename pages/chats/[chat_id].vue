@@ -6,6 +6,7 @@
                     :username="message.user.name"
                     :content_message="message.content"
                     :avatar="message.user.avatar"
+                    :timestamp="message.timestamp"
                     :is_sender="message.user.user_id == user.user_id"
                     :is_typing="message.is_typing"
                 />
@@ -14,6 +15,7 @@
                     :username="message.user.name"
                     :content_message="message.content"
                     :avatar="message.user.avatar"
+                    :timestamp="message.timestamp"
                     :is_sender="message.user.user_id == user.user_id"
                     :is_typing="message.is_typing"
                 />
@@ -28,8 +30,11 @@ import type { User } from "~/types/user";
 import {
     TextMessage,
     type ChatMessage,
-    TypeContentMessage
+    TypeContentMessage,
+type ChatRoom
 } from "~/types/chat_message"
+
+const socket = io('ws://localhost:3500')
 
 const { chat_id } = useRoute().params
 const { getUserById } = useUserService()
@@ -37,8 +42,7 @@ const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
 const secondUser = ref<User>()
 const messages = ref<ChatMessage[]>([])
-
-const socket = io('ws://localhost:3500')
+const chatRooms = ref<ChatRoom[]>([])
 
 const handleSendMessage = (message: string) => {
     const content = new TextMessage(message)
@@ -98,6 +102,14 @@ function removeTypingFromMessages() {
     messages.value = newMessages
 }
 
+function createChatRoom(users: User[]) {
+    const chatRoom: ChatRoom = {
+        room_id: generateRandomString(10),
+        users: users
+    }
+    chatRooms.value = chatRooms.value.concat(chatRoom)
+}
+
 onBeforeMount(async () => {
     const user_id = Number(chat_id)
     await getUserById(user_id)
@@ -107,6 +119,10 @@ onBeforeMount(async () => {
         })
         .catch((error) => {
             console.log(error)
+        })
+        .finally(() => {
+            if(secondUser.value)
+                createChatRoom([user, secondUser.value])
         })
 })
 
