@@ -43,7 +43,8 @@ export default defineNuxtConfig({
     runtimeConfig: {
         public: {
             app_name: "Netijen Curhat",
-            base_api_url: process.env.BASE_URL_API
+            base_api_url: process.env.BASE_URL_API,
+            base_socket_url: process.env.BASE_URL_SOCKET
         },
     },
 

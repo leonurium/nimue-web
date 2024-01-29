@@ -26,7 +26,7 @@ export default () => {
     }
 
     const login = (email: string, password: string) => {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 const deviceId = getDeviceId();
                 const response = await $fetch<BaseResponse>(
@@ -41,7 +41,7 @@ export default () => {
                         credentials: 'include'
                     }
                 );
-                if(response.success) {
+                if (response.success) {
                     const data = response.data as BaseLoginData
                     setToken(data.access_token)
                     setUser(data.user)
@@ -57,7 +57,7 @@ export default () => {
     };
 
     const loginAsAnonymous = () => {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 const deviceId = getDeviceId();
                 const response = await $fetch<BaseResponse>(
@@ -70,7 +70,7 @@ export default () => {
                         credentials: 'include'
                     }
                 );
-                if(response.success) {
+                if (response.success) {
                     const data = response.data as BaseLoginData
                     setToken(data.access_token)
                     setUser(data.user)
@@ -86,7 +86,7 @@ export default () => {
     };
 
     const registerAnonymous = () => {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 const deviceId = getDeviceId();
                 const response = await $fetch<BaseResponse>(
@@ -99,7 +99,7 @@ export default () => {
                         credentials: 'include'
                     }
                 );
-                if(response.success) {
+                if (response.success) {
                     const data = response.data as BaseLoginData
                     setToken(data.access_token)
                     setUser(data.user)
@@ -115,13 +115,13 @@ export default () => {
     };
 
     const getUser = () => {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 const response = await useFetchApi(
                     `${base_url}/user/me/`,
                     { method: 'GET', credentials: 'include' }
                 );
-                if(response.success) {
+                if (response.success) {
                     const user = response.data as User
                     setUser(user)
                     resolve(true)
@@ -136,14 +136,14 @@ export default () => {
     };
 
     const refreshToken = () => {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             try {
                 const deviceId = getDeviceId();
                 const response = await $fetch<BaseResponse>(
                     `${base_url}/auth/refresh/`,
                     { method: 'GET', credentials: 'include' }
                 );
-                if(response.success) {
+                if (response.success) {
                     const data = response.data as RefreshTokenData
                     setToken(data.access_token)
                     resolve(true)
@@ -158,7 +158,7 @@ export default () => {
     };
 
     const initAuth = () => {
-        return new Promise(async(resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             setIsAuthLoading(true)
             try {
                 await refreshToken()

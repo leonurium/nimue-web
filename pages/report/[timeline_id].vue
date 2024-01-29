@@ -61,7 +61,7 @@ const onSubmit = handleSubmit( async (values) => {
     loadingReport.value = true
     await report(
         user.user_id,
-        timeline.value?.user_id ?? 0,
+        timeline.value?.user_id ?? "",
         values['reason'],
         String(timeline.value?.timeline_id ?? ""),
         timeline.value?.text_content ?? ""

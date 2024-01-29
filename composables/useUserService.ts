@@ -3,7 +3,7 @@ import type { User } from "~/types/user";
 export default () => {
     const base_url = useRuntimeConfig().public.base_api_url;
 
-    const getUserById = async (user_id: number) => {
+    const getUserById = async (user_id: string) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await useFetchApi(

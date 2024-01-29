@@ -6,7 +6,7 @@ export interface TimelinesData {
 
 export interface Timeline {
     timeline_id:    number;
-    user_id:        number;
+    user_id:        string;
     device_id:      string;
     name:           string;
     text_content:   string;

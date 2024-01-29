@@ -2,40 +2,32 @@
     <div class="flex flex-col h-full overflow-x-auto mb-4">
         <div class="flex flex-col h-full">
             <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
-                <ChatBubble v-if="message.is_typing"
-                    :username="message.user.name"
-                    :content_message="message.content"
-                    :avatar="message.user.avatar"
-                    :timestamp="message.timestamp"
-                    :is_sender="message.user.user_id == user.user_id"
-                    :is_typing="message.is_typing"
-                />
+                <ChatBubble v-if="message.is_typing" :username="message.from.name" :content_message="message.content"
+                    :avatar="message.from.avatar" :timestamp="message.timestamp"
+                    :is_sender="message.from.user_id == user.user_id" :is_typing="message.is_typing" />
                 <!-- chat bubble  -->
-                <ChatBubble v-else
-                    :username="message.user.name"
-                    :content_message="message.content"
-                    :avatar="message.user.avatar"
-                    :timestamp="message.timestamp"
-                    :is_sender="message.user.user_id == user.user_id"
-                    :is_typing="message.is_typing"
-                />
+                <ChatBubble v-else :username="message.from.name" :content_message="message.content"
+                    :avatar="message.from.avatar" :timestamp="message.timestamp"
+                    :is_sender="message.from.user_id == user.user_id" :is_typing="message.is_typing" />
             </div>
         </div>
     </div>
     <ReplyForm :user="user" @onSubmit="handleSendMessage" @onKeypress="handleKeypress" />
 </template>
 <script lang="ts" setup>
-import io from "socket.io-client"
 import type { User } from "~/types/user";
 import {
     TextMessage,
     type ChatMessage,
     TypeContentMessage,
-type ChatRoom
+    type ChatRoom
 } from "~/types/chat_message"
 
-const socket = io('ws://localhost:3500')
+definePageMeta({
+    middleware: 'socket'
+})
 
+const socket = useSocket()
 const { chat_id } = useRoute().params
 const { getUserById } = useUserService()
 const { useAuthUser } = useAuth()
@@ -45,36 +37,42 @@ const messages = ref<ChatMessage[]>([])
 const chatRooms = ref<ChatRoom[]>([])
 
 const handleSendMessage = (message: string) => {
-    const content = new TextMessage(message)
-    const chatMessage: ChatMessage = {
-        user: user,
-        chat_id: generateRandomString(10),
-        content: content,
-        timestamp: (new Date()),
-        is_typing: false
-    }
+    if (secondUser.value) {
+        const content = new TextMessage(message)
+        const chatMessage: ChatMessage = {
+            from: user,
+            to: secondUser.value,
+            chat_id: generateRandomString(10),
+            content: content,
+            timestamp: (new Date()),
+            is_typing: false
+        }
 
-    socket.emit('message', chatMessage)
+        socket.value?.emit('message', { to: secondUser.value.user_id, data: chatMessage })
+    }
 }
 
 const handleKeypress = () => {
-    const chatMessage: ChatMessage = {
-        user: user,
-        chat_id: generateRandomString(10),
-        timestamp: (new Date()),
-        is_typing: true
+    if (secondUser.value) {
+        const chatMessage: ChatMessage = {
+            from: user,
+            to: secondUser.value,
+            chat_id: generateRandomString(10),
+            timestamp: (new Date()),
+            is_typing: true
+        }
+        socket.value?.emit('typing', { to: secondUser.value.user_id, data: chatMessage })
     }
-    socket.emit('typing', chatMessage)
 }
 
-socket.on('message', (data: ChatMessage) => {
+socket.value?.on('message', (data: ChatMessage) => {
     removeTypingFromMessages()
     messages.value = messages.value.concat(data)
     console.log(messages.value)
 })
 
-socket.on('typing', (data: ChatMessage) => {
-    if(!typingIsExist()) {
+socket.value?.on('typing', (data: ChatMessage) => {
+    if (!typingIsExist()) {
         messages.value = messages.value.concat(data)
 
         //clear after 3 sec
@@ -86,7 +84,7 @@ socket.on('typing', (data: ChatMessage) => {
 
 function typingIsExist(): boolean {
     const chats = messages.value.filter((message) => {
-        if(message.is_typing) {
+        if (message.is_typing) {
             return message
         }
     })
@@ -95,7 +93,7 @@ function typingIsExist(): boolean {
 
 function removeTypingFromMessages() {
     const newMessages = messages.value.filter((message) => {
-        if(!message.is_typing) {
+        if (!message.is_typing) {
             return message
         }
     })
@@ -111,7 +109,7 @@ function createChatRoom(users: User[]) {
 }
 
 onBeforeMount(async () => {
-    const user_id = Number(chat_id)
+    const user_id = String(chat_id)
     await getUserById(user_id)
         .then((result) => {
             const data = result as User
@@ -121,8 +119,10 @@ onBeforeMount(async () => {
             console.log(error)
         })
         .finally(() => {
-            if(secondUser.value)
+            if (secondUser.value) {
+                socket.value?.emit('join-room', { room: secondUser.value.user_id })
                 createChatRoom([user, secondUser.value])
+            }
         })
 })
 

@@ -3,7 +3,7 @@ import type { Timeline, TimelinesData } from "~/types/timeline";
 export default () => {
     const base_url = useRuntimeConfig().public.base_api_url;
 
-    const getTimelines = async (user_id: number, page: string, itemPerPage: string) => {
+    const getTimelines = async (user_id: string, page: string, itemPerPage: string) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await useFetchApi(
@@ -41,7 +41,7 @@ export default () => {
         })
     }
 
-    const newTimeline = async (user_id: number, name: string, text_content: string) => {
+    const newTimeline = async (user_id: string, name: string, text_content: string) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await useFetchApi(
@@ -86,7 +86,7 @@ export default () => {
         })
     }
 
-    const doLikeTimeline = async (user_id: number, timeline_id: number) => {
+    const doLikeTimeline = async (user_id: string, timeline_id: number) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await useFetchApi(
@@ -110,7 +110,7 @@ export default () => {
         })
     }
 
-    const doUnlikeTimeline = async (user_id: number, timeline_id: number) => {
+    const doUnlikeTimeline = async (user_id: string, timeline_id: number) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await useFetchApi(
@@ -134,7 +134,7 @@ export default () => {
         })
     }
 
-    const doShareTimeline = async (user_id: number, timeline_id: number) => {
+    const doShareTimeline = async (user_id: string, timeline_id: number) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await useFetchApi(

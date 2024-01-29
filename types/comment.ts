@@ -7,7 +7,7 @@ export interface CommentsData {
 export interface Comment {
     comment_id:     number;
     timeline_id:    number;
-    user_id:        number;
+    user_id:        string;
     device_id:      string;
     name:           string;
     text_content:   string;

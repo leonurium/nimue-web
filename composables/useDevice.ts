@@ -2,7 +2,6 @@ export default () => {
     const keyDeviceId = 'device_id'
 
     function getDeviceId(): string {
-        console.log('get device id')
         //check device id on local storage
         const getDeviceIdFromLocalStorage = localStorage.getItem(keyDeviceId)
         if (getDeviceIdFromLocalStorage != null) {

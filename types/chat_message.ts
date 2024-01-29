@@ -1,7 +1,13 @@
 import type { User } from "./user";
 
+export interface ChatSession {
+    userID:     number;
+    connected:  boolean;
+}
+
 export interface ChatMessage {
-    user:           User;
+    from:           User;
+    to:             User;
     chat_id:        string;
     content?:       ContentMessage;
     timestamp:      Date;
