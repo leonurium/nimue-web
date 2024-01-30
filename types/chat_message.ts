@@ -1,22 +1,18 @@
 import type { User } from "./user";
 
 export interface ChatSession {
-    userID:     number;
+    user_id:    string;  //as room also
+    user:       User;
     connected:  boolean;
 }
 
 export interface ChatMessage {
-    from:           User;
-    to:             User;
+    from:           string;
+    to:             string;
     chat_id:        string;
     content?:       ContentMessage;
     timestamp:      Date;
     is_typing:      boolean;
-}
-
-export interface ChatRoom {
-    room_id:    string;
-    users:      User[];
 }
 
 export interface ContentMessage {

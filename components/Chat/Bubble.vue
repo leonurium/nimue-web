@@ -17,7 +17,7 @@
                     'scale-x-[-1]': props.is_sender
                 }"
                 :src="props.avatar ?? ''"
-                :fallback="getInitials(props.username)"
+                :fallback="getInitials(props.username ?? 'NaN')"
             />
             <div
                 :class="{
@@ -42,7 +42,7 @@ import {
 const props = defineProps({
     username: {
         type: String,
-        required: true
+        required: false
     },
     content_message: {
         type: Object as () => ContentMessage | undefined,
@@ -53,7 +53,7 @@ const props = defineProps({
         required: false
     },
     timestamp: {
-        type: Date,
+        type: String,
         required: true
     },
     is_sender: {
