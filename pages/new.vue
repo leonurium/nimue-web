@@ -51,7 +51,7 @@ const onSubmit = handleSubmit( async (values) => {
         .then((result) => {
             showMessage("Successfully posted!", TypeMessage.success)
             setTimeout(() => {
-                navigateTo(window.location.origin, { external: true })
+                navigateTo('/')
             }, 2000);
         })
         .catch((error) => {

@@ -69,7 +69,7 @@ const onSubmit = handleSubmit( async (values) => {
         .then(() => {
             showMessage(`Report message has been sent with reason flag ${values['reason']}`, TypeMessage.success)
             setTimeout(() => {
-                navigateTo(window.location.origin, { external: true })
+                navigateTo('/')
             }, 3000)
         })
         .catch((error) => {

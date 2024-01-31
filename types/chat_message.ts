@@ -2,8 +2,9 @@ import type { User } from "./user";
 
 export interface ChatSession {
     user_id:    string;  //as room also
-    user:       User;
+    user?:      User;
     connected:  boolean;
+    messages?:  ChatMessage[];
 }
 
 export interface ChatMessage {

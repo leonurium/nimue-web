@@ -22,7 +22,32 @@ export default () => {
         })
     }
 
+    const getMultipleUsers = async (user_ids: string[]) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await useFetchApi(
+                    `${base_url}/user/multiple/`,
+                    {
+                        method: 'POST',
+                        body: {
+                            'user_ids': user_ids
+                        }
+                    }
+                );
+                if (response.success) {
+                    const data = response.data as User[]
+                    resolve(data)
+                } else {
+                    reject(response.message)
+                }
+            } catch (error) {
+                reject(error)
+            }
+        })
+    }
+
     return {
-        getUserById
+        getUserById,
+        getMultipleUsers
     }
 }

@@ -67,6 +67,10 @@ const handleKeypress = () => {
     }
 }
 
+socket.value?.on('get-messages', (newMessages: ChatMessage[]) => {
+    messages.value = newMessages
+})
+
 socket.value?.on('message', (data: ChatMessage) => {
     removeTypingFromMessages()
     messages.value = messages.value.concat(data)
@@ -138,20 +142,17 @@ onBeforeMount(async () => {
         })
         .finally(() => {
             if (secondUser.value) {
-                const session1: ChatSession = {
+                sessions.value = []
+                sessions.value.push({
                     user_id: user.user_id,
                     user: user,
                     connected: true
-                }
-                const session2: ChatSession = {
+                }, {
                     user_id: secondUser.value.user_id,
                     user: secondUser.value,
                     connected: true
-                }
-                sessions.value = []
-                sessions.value.push(session1, session2)
-                socket.value?.emit('join-room', { room: secondUser.value.user_id })
-                socket.value?.emit('join-room', { room: user.user_id })
+                })
+                socket.value?.emit('request-messages', ({user_id: secondUser.value.user_id}))
             }
         })
 })

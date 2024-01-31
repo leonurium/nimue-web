@@ -12,6 +12,7 @@ type BaseDataResponse =
     BaseLoginData |
     RefreshTokenData |
     User |
+    User[] |
     null
 
 export interface BaseResponse {

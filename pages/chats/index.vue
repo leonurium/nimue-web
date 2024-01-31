@@ -1,113 +1,96 @@
 <template>
-    <div class="flex flex-col h-full overflow-x-auto mb-4">
-        <div class="flex flex-col h-full">
-            <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
-                <ChatBubble v-if="message.is_typing"
-                    :username="message.from.name"
-                    :content_message="message.content"
-                    :avatar="message.from.avatar"
-                    :timestamp="message.timestamp"
-                    :is_sender="message.from.user_id == user.user_id"
-                    :is_typing="message.is_typing"
-                />
-                <!-- chat bubble  -->
-                <ChatBubble v-else
-                    :username="message.from.name"
-                    :content_message="message.content"
-                    :avatar="message.from.avatar"
-                    :timestamp="message.timestamp"
-                    :is_sender="message.from.user_id == user.user_id"
-                    :is_typing="message.is_typing"
-                />
-            </div>
-        </div>
+    <div class="flex items-center justify-center">
+        <UiList class="max-w-sm">
+            <template v-for="session in sessions">
+                <UiListItem @click="handleClickUser(session.user?.user_id)" class="items-start px-0">
+                    <UiAvatar :src="session.user?.avatar" :fallback="getInitials(session.user?.name ?? 'NaN')" />
+                    <UiListContent>
+                        <UiListTitle :title="session.user?.name" />
+                        <UiListSubtitle class="line-clamp-2" :subtitle="lastMessage(session.messages)" />
+                    </UiListContent>
+                    <UiButton size="icon-sm" variant="ghost" class="ml-auto shrink-0 self-center rounded-full">
+                        <Icon name="lucide:chevron-right" />
+                    </UiButton>
+                </UiListItem>
+                <UiSeparator class="my-2.5 ml-auto w-[85%] last:hidden" />
+            </template>
+        </UiList>
     </div>
-    <ReplyForm :user="user" @onSubmit="handleSendMessage" @onKeypress="handleKeypress" />
 </template>
 <script lang="ts" setup>
-import io from "socket.io-client"
 import type { User } from "~/types/user";
 import {
     TextMessage,
     type ChatMessage,
-    TypeContentMessage,
-type ChatRoom
+    type ChatSession,
+    TypeContentMessage
 } from "~/types/chat_message"
 
-const socket = io('ws://localhost:3500')
-
-const { useAuthUser } = useAuth()
-const user = useAuthUser().value as User
-const secondUser = ref<User>()
-const messages = ref<ChatMessage[]>([])
-const chatRooms = ref<ChatRoom[]>([])
-
-const handleSendMessage = (message: string) => {
-    const content = new TextMessage(message)
-    const chatMessage: ChatMessage = {
-        from: user,
-        to: user,
-        chat_id: generateRandomString(10),
-        content: content,
-        timestamp: (new Date()),
-        is_typing: false
-    }
-
-    socket.emit('message', chatMessage)
-}
-
-const handleKeypress = () => {
-    const chatMessage: ChatMessage = {
-        from: user,
-        to: user,
-        chat_id: generateRandomString(10),
-        timestamp: (new Date()),
-        is_typing: true
-    }
-    socket.emit('typing', chatMessage)
-}
-
-socket.on('message', (data: ChatMessage) => {
-    removeTypingFromMessages()
-    messages.value = messages.value.concat(data)
-    console.log(messages.value)
+definePageMeta({
+    middleware: 'socket'
 })
 
-socket.on('typing', (data: ChatMessage) => {
-    if(!typingIsExist()) {
-        messages.value = messages.value.concat(data)
+const socket = useSocket()
+const { getMultipleUsers } = useUserService()
+const sessions = ref<ChatSession[]>([])
 
-        //clear after 3 sec
-        setTimeout(() => {
-            removeTypingFromMessages()
-        }, 3000);
+const lastMessage = (messages?: ChatMessage[]): string => {
+    const lastItem = (messages?.length ?? 1) - 1
+    const message = messages?.at(lastItem)
+    if (message && message.content) {
+        switch (message.content.type) {
+            case TypeContentMessage.text:
+                const msg = message.content as TextMessage
+                return msg.text
+            default:
+                return "Chat aku dong!"
+        }
     }
+    return "Chat aku dong!"
+}
+
+socket.value?.on('get-users', async (users: ChatSession[]) => {
+    const usersData = users
+    let userIds: string[] = usersData.map(session => session.user_id)
+    await getMultipleUsers(userIds)
+        .then((result) => {
+            const users = result as User[]
+            for (let index = 0; index < users.length; index++) {
+                if (usersData[index].user_id == users[index].user_id) {
+                    const session: ChatSession = {
+                        user_id: usersData[index].user_id,
+                        user: users[index],
+                        connected: usersData[index].connected,
+                        messages: usersData[index].messages
+                    }
+                    sessions.value.push(session)
+                    console.log("session: ", sessions.value)
+                }
+            }
+        })
 })
 
-function typingIsExist(): boolean {
-    const chats = messages.value.filter((message) => {
-        if(message.is_typing) {
-            return message
-        }
-    })
-    return chats.length > 0
+function handleClickUser(user_id?: string) {
+    navigateTo(`/chats/${user_id}`)
 }
 
-function removeTypingFromMessages() {
-    const newMessages = messages.value.filter((message) => {
-        if(!message.is_typing) {
-            return message
-        }
-    })
-    messages.value = newMessages
-}
-
-function createChatRoom(users: User[]) {
-    const chatRoom: ChatRoom = {
-        room_id: generateRandomString(10),
-        users: users
+function handleSocketDisconnect(): void {
+    if(socket.value) {
+        socket.value.off('users')
+        socket.value.offAny()
+        socket.value.disconnect()
+        console.log('cleanup')
     }
-    chatRooms.value = chatRooms.value.concat(chatRoom)
 }
+
+onBeforeRouteLeave(() => {
+    console.log('onBeforeRouteLeave')
+    // handleSocketDisconnect()
+})
+
+onBeforeUnmount(() => {
+    console.log('onBeforeUnmount')
+    // handleSocketDisconnect()
+})
 
 </script>
