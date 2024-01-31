@@ -21,7 +21,8 @@ import type { User } from "~/types/user";
 import {
     TextMessage,
     type ChatMessage,
-    type ChatSession
+    type ChatSession,
+type ResponseChatMessage
 } from "~/types/chat_message"
 import { string } from "zod";
 
@@ -37,6 +38,8 @@ const user = useAuthUser().value as User
 const secondUser = ref<User>()
 const messages = ref<ChatMessage[]>([])
 const sessions = ref<ChatSession[]>([])
+const page = ref<number>(1)
+const itemPerPage: number = 10
 
 const handleSendMessage = (message: string) => {
     if (secondUser.value) {
@@ -74,8 +77,10 @@ const handleOnRender = (data: ChatMessage) => {
     }
 }
 
-socket.value?.on('get-messages', (newMessages: ChatMessage[]) => {
-    messages.value = newMessages
+socket.value?.on('get-messages', (response: ResponseChatMessage) => {
+    console.log(response)
+    page.value = response.next_page
+    messages.value = response.messages
 })
 
 socket.value?.on('message', (data: ChatMessage) => {
@@ -205,7 +210,11 @@ onBeforeMount(async () => {
                     user: secondUser.value,
                     connected: true
                 })
-                socket.value?.emit('request-messages', ({ user_id: secondUser.value.user_id }))
+                socket.value?.emit('request-messages', ({
+                    user_id: secondUser.value.user_id,
+                    page: page.value,
+                    item_per_page: itemPerPage
+                }))
             }
         })
 })

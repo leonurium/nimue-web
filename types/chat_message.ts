@@ -7,6 +7,12 @@ export interface ChatSession {
     messages?:  ChatMessage[];
 }
 
+export interface ResponseChatMessage {
+    page: number;
+    next_page: number;
+    messages: ChatMessage[];
+}
+
 export interface ChatMessage {
     from:           string;
     to:             string;

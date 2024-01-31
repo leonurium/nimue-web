@@ -28,6 +28,7 @@ import {
     type ChatSession,
     TypeContentMessage
 } from "~/types/chat_message"
+import { TypeMessage } from "~/types";
 
 definePageMeta({
     middleware: 'socket'
@@ -69,10 +70,12 @@ socket.value?.on('get-users', async (users: ChatSession[]) => {
         .then((result) => {
             const users = result as User[]
             for (let index = 0; index < users.length; index++) {
-                if (usersData[index].user_id == users[index].user_id) {
+                const userFromAPI = users.find((user) => user.user_id === usersData[index].user_id)
+
+                if (userFromAPI) {
                     const session: ChatSession = {
                         user_id: usersData[index].user_id,
-                        user: users[index],
+                        user: userFromAPI,
                         connected: usersData[index].connected,
                         messages: usersData[index].messages
                     }
@@ -80,6 +83,10 @@ socket.value?.on('get-users', async (users: ChatSession[]) => {
                     console.log("session: ", sessions.value)
                 }
             }
+        })
+        .catch((error) => {
+            const { showMessage } = useMessage()
+            showMessage(error.message, TypeMessage.destructive)
         })
 })
 
