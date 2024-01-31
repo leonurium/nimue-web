@@ -6,8 +6,11 @@
                     <UiAvatar :src="session.user?.avatar" :fallback="getInitials(session.user?.name ?? 'NaN')" />
                     <UiListContent>
                         <UiListTitle :title="session.user?.name" />
-                        <UiListSubtitle class="line-clamp-2" :subtitle="lastMessage(session.messages)" />
+                        <UiListSubtitle class="line-clamp-2" :subtitle="getLastMessageInfo(session.messages).lastMessage" />
                     </UiListContent>
+                    <p class="ml-auto text-xs font-normal text-muted-foreground">
+                        {{ getLastMessageInfo(session.messages).lastMessageTime }}
+                    </p>
                     <UiButton size="icon-sm" variant="ghost" class="ml-auto shrink-0 self-center rounded-full">
                         <Icon name="lucide:chevron-right" />
                     </UiButton>
@@ -34,19 +37,29 @@ const socket = useSocket()
 const { getMultipleUsers } = useUserService()
 const sessions = ref<ChatSession[]>([])
 
-const lastMessage = (messages?: ChatMessage[]): string => {
+const getLastMessageInfo = (messages?: ChatMessage[]): { lastMessage: string, lastMessageTime: string } => {
+    const defaultResult = {
+        lastMessage: "Chat aku dong!",
+        lastMessageTime: getTimeAgo((new Date()).toISOString())
+    }
     const lastItem = (messages?.length ?? 1) - 1
     const message = messages?.at(lastItem)
     if (message && message.content) {
         switch (message.content.type) {
             case TypeContentMessage.text:
                 const msg = message.content as TextMessage
-                return msg.text
+                return {
+                    lastMessage: msg.text,
+                    lastMessageTime: getTimeAgo((new Date(message.timestamp)).toISOString())
+                }
             default:
-                return "Chat aku dong!"
+                return {
+                    lastMessage: defaultResult.lastMessage,
+                    lastMessageTime: getTimeAgo((new Date(message.timestamp)).toISOString())
+                }
         }
     }
-    return "Chat aku dong!"
+    return defaultResult
 }
 
 socket.value?.on('get-users', async (users: ChatSession[]) => {
@@ -75,8 +88,8 @@ function handleClickUser(user_id?: string) {
 }
 
 function handleSocketDisconnect(): void {
-    if(socket.value) {
-        socket.value.off('users')
+    if (socket.value) {
+        socket.value.off('get-users')
         socket.value.offAny()
         socket.value.disconnect()
         console.log('cleanup')
@@ -85,12 +98,18 @@ function handleSocketDisconnect(): void {
 
 onBeforeRouteLeave(() => {
     console.log('onBeforeRouteLeave')
-    // handleSocketDisconnect()
+    handleSocketDisconnect()
 })
 
 onBeforeUnmount(() => {
     console.log('onBeforeUnmount')
-    // handleSocketDisconnect()
+    handleSocketDisconnect()
 })
 
+onMounted(() => {
+    if (socket.value && !socket.value.connected) {
+        console.log('try to connecting')
+        socket.value.connect()
+    }
+})
 </script>

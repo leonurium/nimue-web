@@ -3,15 +3,14 @@
         <div class="flex flex-col h-full">
             <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
                 <!-- typing -->
-                <ChatBubble v-if="message.is_typing" :username="getUserFromSession(message.from)?.name"
-                    :content_message="message.content" :avatar="getUserFromSession(message.from)?.avatar"
-                    :timestamp="message.timestamp.toTimeString" :is_sender="message.from == user.user_id"
-                    :is_typing="message.is_typing" />
+                <ChatBubble v-if="message.is_typing ?? false" :username="getUserFromSession(message.from)?.name"
+                    :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.timestamp)"
+                    :is_sender="message.from == user.user_id" :is_typing="message.is_typing" />
                 <!-- chat bubble from -->
-                <ChatBubble v-else :username="getUserFromSession(message.from)?.name"
-                    :content_message="message.content" :avatar="getUserFromSession(message.from)?.avatar"
-                    :timestamp="message.timestamp.toTimeString" :is_sender="message.from == user.user_id"
-                    :is_typing="message.is_typing" />
+                <ChatBubble v-else :username="getUserFromSession(message.from)?.name" :content_message="message.content"
+                    :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.timestamp)"
+                    :is_sender="message.from == user.user_id" :is_read="message.is_read ?? false"
+                    @onRender="handleOnRender(message)" />
             </div>
         </div>
     </div>
@@ -24,6 +23,7 @@ import {
     type ChatMessage,
     type ChatSession
 } from "~/types/chat_message"
+import { string } from "zod";
 
 definePageMeta({
     middleware: 'socket'
@@ -44,10 +44,10 @@ const handleSendMessage = (message: string) => {
         const data: ChatMessage = {
             from: user.user_id,
             to: secondUser.value.user_id,
-            chat_id: generateRandomString(10),
+            chat_id: crypto.randomUUID(),
             content: content,
             timestamp: (new Date()),
-            is_typing: false
+            is_read: false
         }
 
         socket.value?.emit('message', data)
@@ -59,11 +59,18 @@ const handleKeypress = () => {
         const data: ChatMessage = {
             from: user.user_id,
             to: secondUser.value.user_id,
-            chat_id: generateRandomString(10),
+            chat_id: crypto.randomUUID(),
             timestamp: (new Date()),
             is_typing: true
         }
         socket.value?.emit('typing', data)
+    }
+}
+
+const handleOnRender = (data: ChatMessage) => {
+    if (data.is_read != true && data.from != user.user_id) {
+        console.log("handle on render: ", data)
+        socket.value?.emit('mark-message-read', data)
     }
 }
 
@@ -88,6 +95,18 @@ socket.value?.on('typing', (data: ChatMessage) => {
     }
 })
 
+socket.value?.on('mark-message-read', (data: ChatMessage) => {
+    console.log('mark-message-read', data)
+    if (user.user_id == data.from) {
+        for (let index = 0; index < messages.value.length; index++) {
+            if (messages.value[index].chat_id === data.chat_id) {
+                messages.value[index].is_read = true
+                console.log("update as read is achieve yeay!")
+            }
+        }
+    }
+})
+
 socket.value?.on('user-joined', (data: ChatSession) => {
     // update user in online / connected
     updateStatusUser(data, "user-online: ")
@@ -100,7 +119,8 @@ socket.value?.on('user-disconnected', (data: ChatSession) => {
 
 function typingIsExist(): boolean {
     const chats = messages.value.filter((message) => {
-        if (message.is_typing) {
+        const is_typing = message.is_typing ?? false
+        if (is_typing) {
             return message
         }
     })
@@ -109,7 +129,8 @@ function typingIsExist(): boolean {
 
 function removeTypingFromMessages() {
     const newMessages = messages.value.filter((message) => {
-        if (!message.is_typing) {
+        const is_typing = message.is_typing ?? false
+        if (!is_typing) {
             return message
         }
     })
@@ -123,12 +144,44 @@ function getUserFromSession(user_id: string): User | undefined {
 
 function updateStatusUser(data: ChatSession, status: string) {
     for (let index = 0; index < sessions.value.length; index++) {
-        if(sessions.value[index].user_id == data.user_id) {
+        if (sessions.value[index].user_id == data.user_id) {
             sessions.value[index].connected = data.connected
             console.log(`${status}`, data.user_id)
         }
     }
 }
+
+function handleSocketDisconnect(): void {
+    if (socket.value) {
+        socket.value.off('get-messages')
+        socket.value.off('message')
+        socket.value.off('typing')
+        socket.value.off('mark-message-read')
+        socket.value.off('user-joined')
+        socket.value.off('user-disconnected')
+        socket.value.offAny()
+        socket.value.disconnect()
+        console.log('cleanup')
+    }
+}
+
+onBeforeRouteLeave(() => {
+    console.log('onBeforeRouteLeave')
+    handleSocketDisconnect()
+})
+
+onBeforeUnmount(() => {
+    console.log('onBeforeUnmount')
+    handleSocketDisconnect()
+})
+
+onMounted(() => {
+    if (socket.value && !socket.value.connected) {
+        console.log('try to connecting')
+        socket.value.connect()
+    }
+})
+
 
 onBeforeMount(async () => {
     const user_id = String(chat_id)
@@ -152,7 +205,7 @@ onBeforeMount(async () => {
                     user: secondUser.value,
                     connected: true
                 })
-                socket.value?.emit('request-messages', ({user_id: secondUser.value.user_id}))
+                socket.value?.emit('request-messages', ({ user_id: secondUser.value.user_id }))
             }
         })
 })

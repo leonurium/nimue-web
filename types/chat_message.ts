@@ -13,7 +13,8 @@ export interface ChatMessage {
     chat_id:        string;
     content?:       ContentMessage;
     timestamp:      Date;
-    is_typing:      boolean;
+    is_typing?:     boolean;
+    is_read?:       boolean;
 }
 
 export interface ContentMessage {

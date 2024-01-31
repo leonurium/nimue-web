@@ -1,32 +1,30 @@
 <template>
-    <div
-        class="p-3 rounded-lg"
-        :class="{
-            'col-start-1 col-end-8': !props.is_sender,
-            'col-start-6 col-end-13': props.is_sender
-        }"
-    >
-        <div
-            :class="{
-                'justify-start flex-row-reverse': props.is_sender
-            }"
-            class="flex flex-row items-center gap-3">
-            <UiAvatar
-                class="h-10 w-10"
-                :class="{
-                    'scale-x-[-1]': props.is_sender
-                }"
-                :src="props.avatar ?? ''"
-                :fallback="getInitials(props.username ?? 'NaN')"
-            />
-            <div
-                :class="{
-                    'bg-white': !props.is_sender,
-                    'bg-blue-200': props.is_sender
-                }"
-                class="relative text-sm text-slate-600 py-2 px-4 shadow rounded-xl">
+    <div class="p-3 rounded-lg" :class="{
+        'col-start-1 col-end-8': !props.is_sender,
+        'col-start-6 col-end-13': props.is_sender
+    }">
+        <div :class="{
+            'justify-start flex-row-reverse': props.is_sender
+        }" class="flex flex-row items-center gap-3">
+            <UiAvatar class="h-10 w-10" :class="{
+                'scale-x-[-1]': props.is_sender
+            }" :src="props.avatar ?? ''" :fallback="getInitials(props.username ?? 'NaN')" />
+            <div :class="{
+                'bg-white': !props.is_sender,
+                'bg-blue-200': props.is_sender
+            }" class="relative text-sm text-slate-600 py-2 px-4 shadow rounded-xl">
                 <div v-if="props.is_typing" class="italic">Typing...</div>
-                <div v-if="textMessage?.text">{{ textMessage?.text }}</div>
+                <div v-if="textMessage?.text" class="flex flex-col">
+                    <div>{{ textMessage?.text }}</div>
+
+                    <div class="flex flex-row items-center gap-1 text-[9px] ml-auto">{{
+                        props.timestamp.toLocaleTimeString() }}
+                        <IconCheckCheck class="h-3 w-3" :class="{
+                            'text-green-600': props.is_read,
+                            'hidden': !props.is_sender
+                        }" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -46,14 +44,14 @@ const props = defineProps({
     },
     content_message: {
         type: Object as () => ContentMessage | undefined,
-        required: true
+        required: false
     },
     avatar: {
         type: String,
         required: false
     },
     timestamp: {
-        type: String,
+        type: Date,
         required: true
     },
     is_sender: {
@@ -63,8 +61,14 @@ const props = defineProps({
     is_typing: {
         type: Boolean,
         required: false
+    },
+    is_read: {
+        type: Boolean,
+        required: false
     }
 })
+
+const emits = defineEmits(['onRender'])
 
 const textMessage = ref<TextMessage>()
 
@@ -74,6 +78,11 @@ onBeforeMount(() => {
             textMessage.value = props.content_message as TextMessage
             break;
     }
+})
+
+onMounted(() => {
+    console.log("on render is called")
+    emits('onRender')
 })
 
 </script>
