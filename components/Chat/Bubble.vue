@@ -1,7 +1,9 @@
 <template>
     <div ref="containerMessage" class="p-3 rounded-lg" :class="{
         'col-start-1 col-end-8': !props.is_sender,
-        'col-start-6 col-end-13': props.is_sender
+        'col-start-6 col-end-13': props.is_sender,
+        'bubble-enter-active': appear,
+        'bubble-enter': appear
     }">
         <div :class="{
             'justify-start flex-row-reverse': props.is_sender
@@ -71,6 +73,7 @@ const props = defineProps({
 const emits = defineEmits(['onRender'])
 const containerMessage = ref<HTMLElement | undefined>(undefined)
 const textMessage = ref<TextMessage>()
+const appear = ref(false)
 
 onBeforeMount(() => {
     switch (props.content_message?.type) {
@@ -89,7 +92,19 @@ onMounted(() => {
             block: 'end',
             inline: 'end'
         })
+        appear.value = true
     })
 })
 
 </script>
+
+<style scoped>
+.bubble-enter-active {
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+}
+
+.bubble-enter {
+    transform: scale(0.9);
+    opacity: 100;
+}
+</style>
