@@ -1,7 +1,9 @@
 <template>
     <NuxtLayout :session="getSessionOtherUser(secondUser)" name="chat">
         <UiContainer class="max-w-2xl p-6">
-            <div class="flex flex-col h-full overflow-x-auto mb-4">
+            <Observer @intersect="getMessages()" />
+            <p v-if="loading">loading...</p>
+            <div class="flex flex-col h-full overflow-scroll mb-4">
                 <div class="flex flex-col h-full">
                     <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
                         <!-- typing -->
@@ -9,7 +11,7 @@
                             :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.timestamp)"
                             :is_sender="message.from == user.user_id" :is_typing="message.is_typing" />
                         <!-- chat bubble from -->
-                        <ChatBubble v-else :username="getUserFromSession(message.from)?.name"
+                        <ChatBubble v-else :key="message.chat_id" :username="getUserFromSession(message.from)?.name"
                             :content_message="message.content" :avatar="getUserFromSession(message.from)?.avatar"
                             :timestamp="new Date(message.timestamp)" :is_sender="message.from == user.user_id"
                             :is_read="message.is_read ?? false" @onRender="handleOnRender(message)" />
@@ -44,6 +46,7 @@ const messages = ref<ChatMessage[]>([])
 const sessions = ref<ChatSession[]>([])
 const page = ref<number>(1)
 const itemPerPage: number = 10
+const loading = ref<boolean>(true)
 
 const handleSendMessage = (message: string) => {
     if (secondUser.value) {
@@ -84,7 +87,8 @@ const handleOnRender = (data: ChatMessage) => {
 socket.value?.on('get-messages', (response: ResponseChatMessage) => {
     console.log(response)
     page.value = response.next_page
-    messages.value = response.messages
+    messages.value.unshift(...response.messages)
+    loading.value = false
 })
 
 socket.value?.on('message', (data: ChatMessage) => {
@@ -164,6 +168,17 @@ function getSessionOtherUser(user?: User): ChatSession | undefined {
     return sessions.value.find(session => session.user_id === user?.user_id)
 }
 
+function getMessages(user_id?: string, pageNumber?: number, itemPerPageNumber?: number) {
+    if (!loading.value) {
+        loading.value = true
+        socket.value?.emit('request-messages', ({
+            user_id: user_id ?? secondUser.value?.user_id,
+            page: pageNumber ?? page.value,
+            item_per_page: itemPerPageNumber ?? itemPerPage
+        }))
+    }
+}
+
 function handleSocketDisconnect(): void {
     if (socket.value) {
         socket.value.off('get-messages')
@@ -218,11 +233,8 @@ onBeforeMount(async () => {
                     user: secondUser.value,
                     connected: false
                 })
-                socket.value?.emit('request-messages', ({
-                    user_id: secondUser.value.user_id,
-                    page: page.value,
-                    item_per_page: itemPerPage
-                }))
+                loading.value = false
+                getMessages(secondUser.value.user_id)
             }
         })
 })

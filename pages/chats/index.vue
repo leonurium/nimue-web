@@ -15,8 +15,14 @@
                         </p>
                     </div>
 
-                    <div class="text-sm text-secondary-foreground/90">
-                        {{ getLastMessageInfo(session.messages).lastMessage.substring(0, 120) }}
+                    <div class="flex flex-row items-center">
+                        <div class="text-sm text-secondary-foreground/90">
+                            {{ getLastMessageInfo(session.messages).lastMessage.substring(0, 120) }}
+                        </div>
+                        <div v-if="getLastMessageInfo(session.messages).totalUnreadMessages > 0"
+                            class="flex items-center justify-center text-[10px] bg-primary text-primary-foreground rounded-full h-4 w-4 ml-auto">
+                            {{ getLastMessageInfo(session.messages).totalUnreadMessages }}
+                        </div>
                     </div>
                 </div>
 
@@ -41,12 +47,16 @@ definePageMeta({
 
 const socket = useSocket()
 const { getMultipleUsers } = useUserService()
+const { useAuthUser } = useAuth()
+const user = useAuthUser().value as User
 const sessions = ref<ChatSession[]>([])
 
-const getLastMessageInfo = (messages?: ChatMessage[]): { lastMessage: string, lastMessageTime: string } => {
+const getLastMessageInfo = (messages?: ChatMessage[]): { lastMessage: string, lastMessageTime: string, totalUnreadMessages: number } => {
+    const totalUnread = messages?.filter(message => message.is_read != true && message.to == user.user_id).length ?? 0
     const defaultResult = {
         lastMessage: "Chat aku dong!",
-        lastMessageTime: getTimeAgo((new Date()).toISOString())
+        lastMessageTime: getTimeAgo((new Date()).toISOString()),
+        totalUnreadMessages: totalUnread
     }
     const lastItem = (messages?.length ?? 1) - 1
     const message = messages?.at(lastItem)
@@ -56,12 +66,14 @@ const getLastMessageInfo = (messages?: ChatMessage[]): { lastMessage: string, la
                 const msg = message.content as TextMessage
                 return {
                     lastMessage: msg.text,
-                    lastMessageTime: getTimeAgo((new Date(message.timestamp)).toISOString())
+                    lastMessageTime: getTimeAgo((new Date(message.timestamp)).toISOString()),
+                    totalUnreadMessages: defaultResult.totalUnreadMessages
                 }
             default:
                 return {
                     lastMessage: defaultResult.lastMessage,
-                    lastMessageTime: getTimeAgo((new Date(message.timestamp)).toISOString())
+                    lastMessageTime: getTimeAgo((new Date(message.timestamp)).toISOString()),
+                    totalUnreadMessages: defaultResult.totalUnreadMessages
                 }
         }
     }

@@ -1,5 +1,5 @@
 <template>
-    <div class="p-3 rounded-lg" :class="{
+    <div ref="containerMessage" class="p-3 rounded-lg" :class="{
         'col-start-1 col-end-8': !props.is_sender,
         'col-start-6 col-end-13': props.is_sender
     }">
@@ -69,7 +69,7 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['onRender'])
-
+const containerMessage = ref<HTMLElement | undefined>(undefined)
 const textMessage = ref<TextMessage>()
 
 onBeforeMount(() => {
@@ -83,6 +83,13 @@ onBeforeMount(() => {
 onMounted(() => {
     console.log("on render is called")
     emits('onRender')
+    nextTick(() => {
+        containerMessage.value?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'end',
+            inline: 'end'
+        })
+    })
 })
 
 </script>
