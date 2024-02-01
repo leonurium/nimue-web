@@ -1,20 +1,24 @@
 <template>
-    <div class="flex flex-col h-full overflow-x-auto mb-4">
-        <div class="flex flex-col h-full">
-            <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
-                <!-- typing -->
-                <ChatBubble v-if="message.is_typing ?? false" :username="getUserFromSession(message.from)?.name"
-                    :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.timestamp)"
-                    :is_sender="message.from == user.user_id" :is_typing="message.is_typing" />
-                <!-- chat bubble from -->
-                <ChatBubble v-else :username="getUserFromSession(message.from)?.name" :content_message="message.content"
-                    :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.timestamp)"
-                    :is_sender="message.from == user.user_id" :is_read="message.is_read ?? false"
-                    @onRender="handleOnRender(message)" />
+    <NuxtLayout :session="getSessionOtherUser(secondUser)" name="chat">
+        <UiContainer class="max-w-2xl p-6">
+            <div class="flex flex-col h-full overflow-x-auto mb-4">
+                <div class="flex flex-col h-full">
+                    <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
+                        <!-- typing -->
+                        <ChatBubble v-if="message.is_typing ?? false" :username="getUserFromSession(message.from)?.name"
+                            :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.timestamp)"
+                            :is_sender="message.from == user.user_id" :is_typing="message.is_typing" />
+                        <!-- chat bubble from -->
+                        <ChatBubble v-else :username="getUserFromSession(message.from)?.name"
+                            :content_message="message.content" :avatar="getUserFromSession(message.from)?.avatar"
+                            :timestamp="new Date(message.timestamp)" :is_sender="message.from == user.user_id"
+                            :is_read="message.is_read ?? false" @onRender="handleOnRender(message)" />
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-    <ReplyForm :user="user" @onSubmit="handleSendMessage" @onKeypress="handleKeypress" />
+            <ReplyForm :user="user" @onSubmit="handleSendMessage" @onKeypress="handleKeypress" />
+        </UiContainer>
+    </NuxtLayout>
 </template>
 <script lang="ts" setup>
 import type { User } from "~/types/user";
@@ -22,12 +26,12 @@ import {
     TextMessage,
     type ChatMessage,
     type ChatSession,
-type ResponseChatMessage
+    type ResponseChatMessage
 } from "~/types/chat_message"
-import { string } from "zod";
 
 definePageMeta({
-    middleware: 'socket'
+    middleware: 'socket',
+    layout: false
 })
 
 const socket = useSocket()
@@ -156,6 +160,10 @@ function updateStatusUser(data: ChatSession, status: string) {
     }
 }
 
+function getSessionOtherUser(user?: User): ChatSession | undefined {
+    return sessions.value.find(session => session.user_id === user?.user_id)
+}
+
 function handleSocketDisconnect(): void {
     if (socket.value) {
         socket.value.off('get-messages')
@@ -204,11 +212,11 @@ onBeforeMount(async () => {
                 sessions.value.push({
                     user_id: user.user_id,
                     user: user,
-                    connected: true
+                    connected: false
                 }, {
                     user_id: secondUser.value.user_id,
                     user: secondUser.value,
-                    connected: true
+                    connected: false
                 })
                 socket.value?.emit('request-messages', ({
                     user_id: secondUser.value.user_id,

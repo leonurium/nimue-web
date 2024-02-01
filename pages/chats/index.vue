@@ -1,24 +1,29 @@
 <template>
-    <div class="flex items-center justify-center">
-        <UiList class="max-w-sm">
-            <template v-for="session in sessions">
-                <UiListItem @click="handleClickUser(session.user?.user_id)" class="items-start px-0">
-                    <UiAvatar :src="session.user?.avatar" :fallback="getInitials(session.user?.name ?? 'NaN')" />
-                    <UiListContent>
-                        <UiListTitle :title="session.user?.name" />
-                        <UiListSubtitle class="line-clamp-2" :subtitle="getLastMessageInfo(session.messages).lastMessage" />
-                    </UiListContent>
-                    <p class="ml-auto text-xs font-normal text-muted-foreground">
-                        {{ getLastMessageInfo(session.messages).lastMessageTime }}
-                    </p>
-                    <UiButton size="icon-sm" variant="ghost" class="ml-auto shrink-0 self-center rounded-full">
-                        <Icon name="lucide:chevron-right" />
-                    </UiButton>
-                </UiListItem>
-                <UiSeparator class="my-2.5 ml-auto w-[85%] last:hidden" />
-            </template>
-        </UiList>
-    </div>
+    <UiContainer class="max-w-2xl p-6">
+        <div v-for="session in sessions" class="flex flex-col">
+            <div @click="handleClickUser(session.user?.user_id)" class="flex flex-row items-center gap-4">
+                <UiAvatar class="h-10 w-10" :src="session.user?.avatar"
+                    :fallback="getInitials(session.user?.name ?? 'NaN')" />
+                <div class="flex flex-col w-full">
+                    <div class="flex flex-row items-center">
+                        <div class="text-base font-bold pr-3">{{ session.user?.name }}</div>
+                        <ChatStatusIcon :isOnline="session.connected" />
+                        <span v-if="session?.connected" class="text-secondary-foreground/70 text-[10px] pl-1">online</span>
+                        <span v-else class="text-secondary-foreground/70 text-[10px] pl-1">offline</span>
+                        <p class="ml-auto text-xs font-normal text-muted-foreground">
+                            {{ getLastMessageInfo(session.messages).lastMessageTime }}
+                        </p>
+                    </div>
+
+                    <div class="text-sm text-secondary-foreground/90">
+                        {{ getLastMessageInfo(session.messages).lastMessage.substring(0, 120) }}
+                    </div>
+                </div>
+
+            </div>
+            <UiDivider class="pt-4 pb-4" />
+        </div>
+    </UiContainer>
 </template>
 <script lang="ts" setup>
 import type { User } from "~/types/user";

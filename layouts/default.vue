@@ -52,11 +52,11 @@ const props = defineProps({
 })
 
 function handleClickLogo() {
-    navigateTo('/', { external: true })
+    navigateTo('/')
 }
 
 function handleNewPost() {
-    navigateTo('/new', { external: true })
+    navigateTo('/new')
 }
 
 </script>
