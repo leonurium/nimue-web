@@ -36,6 +36,12 @@ export default defineNuxtConfig({
         ],
     },
 
+    vue: {
+        compilerOptions: {
+            isCustomElement: tag => tag === 'TransitionSlide'
+        }
+    },
+
     lucide: {
         namePrefix: 'Icon'
     },

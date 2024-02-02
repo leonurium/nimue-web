@@ -1,37 +1,23 @@
 <template>
     <NuxtLayout :session="getSessionOtherUser(secondUser)" name="chat">
-        <UiContainer class="max-w-2xl p-6">
-            <div class="flex flex-col h-full overflow-scroll mb-4">
-                <div class="flex flex-col h-full">
-                    <Observer @intersect="getMessages()" />
-                    <p v-if="loading">loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                        loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...loading...
-                    </p>
-                    <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
-                        <!-- typing -->
-                        <ChatBubble v-if="message.is_typing ?? false" :username="getUserFromSession(message.from)?.name"
-                            :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.timestamp)"
-                            :is_sender="message.from == user.user_id" :is_typing="message.is_typing" />
-                        <!-- chat bubble from -->
-                        <ChatBubble v-else :key="message.chat_id" :username="getUserFromSession(message.from)?.name"
-                            :content_message="message.content" :avatar="getUserFromSession(message.from)?.avatar"
-                            :timestamp="new Date(message.timestamp)" :is_sender="message.from == user.user_id"
-                            :is_read="message.is_read ?? false" @onRender="handleOnRender(message)" />
-                    </div>
-                </div>
+        <div class="flex flex-col overflow-scroll h-[calc(100svh-56px-56px-76px-12px)]">
+            <!-- loading -->
+            <LoadingSpinner v-if="loading" class="w-full h-16" />
+            <Observer @intersect="getMessages()" />
+            <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
+                <!-- typing -->
+                <ChatBubble v-if="message.is_typing ?? false" :username="getUserFromSession(message.from)?.name"
+                    :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.timestamp)"
+                    :is_sender="message.from == user.user_id" :is_typing="message.is_typing" />
+                <!-- chat bubble from -->
+                <ChatBubble v-else :key="message.chat_id" :username="getUserFromSession(message.from)?.name"
+                    :content_message="message.content" :avatar="getUserFromSession(message.from)?.avatar"
+                    :timestamp="new Date(message.timestamp)" :is_sender="message.from == user.user_id"
+                    :is_read="message.is_read ?? false" @onRender="handleOnRender(message)" />
             </div>
-            <ReplyForm :user="user" @onSubmit="handleSendMessage" @onKeypress="handleKeypress" />
-        </UiContainer>
+        </div>
+        <ReplyForm class="sticky bottom-14 border-t" :user="user" @onSubmit="handleSendMessage"
+            @onKeypress="handleKeypress" />
     </NuxtLayout>
 </template>
 <script lang="ts" setup>
@@ -110,7 +96,7 @@ socket.value?.on('message', (data: ChatMessage) => {
 })
 
 socket.value?.on('typing', (data: ChatMessage) => {
-    if (!typingIsExist()) {
+    if (!typingIsExist() && data.from === secondUser.value?.user_id) {
         messages.value = messages.value.concat(data)
 
         //clear after 3 sec

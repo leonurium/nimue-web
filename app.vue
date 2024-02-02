@@ -8,13 +8,13 @@
         </div>
         <div v-else-if="user">
             <NuxtLayout :user="user">
-                <NuxtPage />
+                <NuxtPage class="h-[calc(100svh-56px-56px)]" />
             </NuxtLayout>
         </div>
         <div v-else>
-            <NuxtLayout>
+            <!-- <NuxtLayout> -->
                 <AuthPage/>
-            </NuxtLayout>
+            <!-- </NuxtLayout> -->
         </div>
 
         <UiToastToaster />

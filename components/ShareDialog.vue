@@ -6,7 +6,7 @@
             </UiButton>
         </UiDialogTrigger>
 
-        <UiDialogContent class="sm:max-w-md" title="Share link"
+        <UiDialogContent class="sm:max-w-md" title="Share"
             description="Share this content with your friends to spread love and wisdom.">
             <template #content>
                 <div class="flex items-center space-x-2">

@@ -1,5 +1,5 @@
 <template>
-    <div ref="containerMessage" class="p-3 rounded-lg" :class="{
+    <div ref="containerMessage" class="pt-3 pb-3 rounded-lg" :class="{
         'col-start-1 col-end-8': !props.is_sender,
         'col-start-6 col-end-13': props.is_sender,
         'bubble-enter-active': appear,

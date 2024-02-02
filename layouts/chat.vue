@@ -1,10 +1,10 @@
 <template>
-    <div>
+    <div class="max-w-2xl mx-auto h-screen">
         <UiNavbar sticky>
             <UiContainer class="flex h-14 items-center justify-between">
                 <div class="flex flex-row items-center">
                     <p class="text-base font-semibold pr-3">{{ session?.user?.name }}</p>
-                    <ChatStatusIcon :isOnline="session?.connected"/>
+                    <ChatStatusIcon :isOnline="session?.connected" />
                     <span v-if="session?.connected" class="text-secondary-foreground/70 text-[10px] pl-1">online</span>
                     <span v-else class="text-secondary-foreground/70 text-[10px] pl-1">offline</span>
                 </div>
@@ -18,16 +18,7 @@
             </UiContainer>
         </UiNavbar>
         <slot />
-        <BottomNavbar class="max-w-2xl mx-auto rounded-full" sticky>
-            <UiContainer class="flex h-14 items-center justify-around">
-                <NuxtLink to="/">
-                    <IconHome />
-                </NuxtLink>
-                <NuxtLink to="/chats/">
-                    <IconMessageCircle />
-                </NuxtLink>
-            </UiContainer>
-        </BottomNavbar>
+        <FooterMobile :routes="routes"/>
     </div>
 </template>
   
@@ -41,5 +32,9 @@ const props = defineProps({
         required: false
     }
 })
+
+const { navRoutes, initRoute } = useNavRoute()
+initRoute()
+const routes = navRoutes().value as NavRoute[]
 
 </script>

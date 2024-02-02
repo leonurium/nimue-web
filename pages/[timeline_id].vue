@@ -1,5 +1,5 @@
 <template>
-    <UiContainer class="max-w-2xl h-screen p-6">
+    <div class="flex flex-col overflow-scroll h-[calc(100svh-56px-56px-76px-12px)] p-6">
         <div v-if="loading">
             <CardThreadsSkeleton />
         </div>
@@ -8,13 +8,9 @@
 
             <UiDivider class="pt-4 pb-4" />
 
-            <ReplyForm :user="user" @onSubmit="handleRepy" />
-
-            <UiDivider class="pt-4 pb-4" />
-
             <div v-if="comments.length > 0">
-                <UiContainer v-for="comment in comments" as="section" class="p-0 overflow-y-auto">
-                    <CommentView :commentData="comment" />
+                <UiContainer v-for="comment in comments" as="section" class="p-0">
+                    <CommentView :key="comment.comment_id" :commentData="comment" />
                 </UiContainer>
             </div>
 
@@ -27,8 +23,8 @@
             </div>
             <Observer @intersect="loadMore" />
         </div>
-
-    </UiContainer>
+    </div>
+    <ReplyForm class="sticky bottom-14 border-t" :user="user" @onSubmit="handleRepy"/>
 </template>
 
 <script lang="ts" setup>

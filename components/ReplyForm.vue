@@ -1,25 +1,27 @@
 <!-- ReplyForm.vue -->
 <template>
-    <div class="flex flex-row pl-12 pb-1 gap-1">
-        <UiButton class="rounded-full h-8 w-8" v-for="(emoji, index) in emojis" @click="emojiClicked(index)"
-            variant="ghost">{{ emoji }}
-        </UiButton>
+    <div class="flex flex-col gap-1 bg-background/90 backdrop-blur p-3">
+        <div class="flex flex-row pl-12 gap-1">
+            <UiButton class="rounded-full h-8 w-8" v-for="(emoji, index) in emojis" @click="emojiClicked(index)"
+                variant="ghost">{{ emoji }}
+            </UiButton>
+        </div>
+        <form @submit.prevent="submitReply" class="flex items-center gap-2">
+            <UiAvatar
+                class="h-10 w-10 rounded-full"
+                :src="props.user.avatar"
+                :fallback="getInitials(props.user.name)"
+            />
+            <UiInput
+                @update:model-value="handleInputUpdateModelValue"
+                v-model="replyText"
+                class="rounded-full"
+                placeholder="mau bales apa?"
+                required
+            />
+            <UiButton type="submit" class="rounded-full">Send</UiButton>
+        </form>
     </div>
-    <form @submit.prevent="submitReply" class="flex items-center gap-2">
-        <UiAvatar
-            class="h-10 w-10 rounded-full"
-            :src="props.user.avatar"
-            :fallback="getInitials(props.user.name)"
-        />
-        <UiInput
-            @update:model-value="handleInputUpdateModelValue"
-            v-model="replyText"
-            class="rounded-full max-w-2xl"
-            placeholder="mau bales apa?"
-            required
-        />
-        <UiButton type="submit" class="rounded-full">Send</UiButton>
-    </form>
 </template>
 
 <script lang="ts" setup>

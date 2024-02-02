@@ -1,41 +1,25 @@
 <template>
-    <div>
+    <div class="max-w-2xl mx-auto h-screen">
         <UiNavbar sticky>
             <UiContainer class="flex h-14 items-center justify-between">
                 <p @click="handleClickLogo" class="text-lg font-semibold">{{ appName }}</p>
                 <div class="flex items-center gap-2">
-                    <UiButton
-                        class="rounded-full"
-                        @click="$colorMode.preference = $colorMode.value == 'dark' ? 'light' : 'dark'"
-                        variant="ghost"
-                        size="icon-sm"
-                    >
-                        <IconSunMedium class="h-4 w-4"/>
+                    <UiButton class="rounded-full"
+                        @click="$colorMode.preference = $colorMode.value == 'dark' ? 'light' : 'dark'" variant="ghost"
+                        size="icon-sm">
+                        <IconSunMedium class="h-4 w-4" />
                     </UiButton>
-                    <UiButton
-                        v-if="user"
-                        @click="handleNewPost"
-                        size="sm"
-                        >
+                    <UiButton v-if="user" @click="handleNewPost" size="sm">
                         New Post
                     </UiButton>
-                    <UiButton v-if="user" @click="" variant="secondary" size="sm">
+                    <UiButton v-if="user" @click="handleLogout" variant="secondary" size="sm">
                         Logout
                     </UiButton>
                 </div>
             </UiContainer>
         </UiNavbar>
         <slot />
-        <BottomNavbar class="max-w-2xl mx-auto rounded-full" sticky>
-            <UiContainer class="flex h-14 items-center justify-around">
-                <NuxtLink to="/">
-                    <IconHome/>
-                </NuxtLink>
-                <NuxtLink to="/chats/">
-                    <IconMessageCircle/>
-                </NuxtLink>
-            </UiContainer>
-        </BottomNavbar>
+        <FooterMobile :routes="routes" />
     </div>
 </template>
   
@@ -51,12 +35,20 @@ const props = defineProps({
     }
 })
 
+const { navRoutes, initRoute } = useNavRoute()
+initRoute()
+const routes = navRoutes().value as NavRoute[]
+
 function handleClickLogo() {
     navigateTo('/')
 }
 
 function handleNewPost() {
     navigateTo('/new')
+}
+
+function handleLogout() {
+    clearNuxtState()
 }
 
 </script>
