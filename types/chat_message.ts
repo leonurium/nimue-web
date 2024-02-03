@@ -29,6 +29,7 @@ export interface ContentMessage {
 
 export enum TypeContentMessage {
     text = 'text',
+    image = 'image',
     audio = 'audio'
 }
 
@@ -38,5 +39,14 @@ export class TextMessage implements ContentMessage {
 
     constructor(text: string) {
         this.text = text
+    }
+}
+
+export class ImageMessage implements ContentMessage {
+    type: TypeContentMessage = TypeContentMessage.image
+    url_image: string;
+
+    constructor(url_image: string) {
+        this.url_image = url_image
     }
 }

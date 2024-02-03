@@ -41,11 +41,7 @@ import {
 } from "~/types/chat_message"
 import { TypeMessage } from "~/types";
 
-definePageMeta({
-    middleware: 'socket'
-})
-
-const socket = useSocket()
+const { socket, authSocket } = useSocket()
 const { getMultipleUsers } = useUserService()
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
@@ -61,26 +57,26 @@ const getLastMessageInfo = (messages?: ChatMessage[]): { lastMessage: string, la
     const lastItem = (messages?.length ?? 1) - 1
     const message = messages?.at(lastItem)
     if (message && message.content) {
+        const lastMessageTime = getTimeAgo((new Date(message.timestamp)).toISOString())
         switch (message.content.type) {
             case TypeContentMessage.text:
                 const msg = message.content as TextMessage
-                return {
-                    lastMessage: msg.text,
-                    lastMessageTime: getTimeAgo((new Date(message.timestamp)).toISOString()),
-                    totalUnreadMessages: defaultResult.totalUnreadMessages
-                }
+                defaultResult.lastMessage = msg.text
+                defaultResult.lastMessageTime = lastMessageTime
+                return defaultResult
+            case TypeContentMessage.image:
+                defaultResult.lastMessage = '[image]'
+                defaultResult.lastMessageTime = lastMessageTime
+                return defaultResult
             default:
-                return {
-                    lastMessage: defaultResult.lastMessage,
-                    lastMessageTime: getTimeAgo((new Date(message.timestamp)).toISOString()),
-                    totalUnreadMessages: defaultResult.totalUnreadMessages
-                }
+                defaultResult.lastMessageTime = lastMessageTime
+                return defaultResult
         }
     }
     return defaultResult
 }
 
-socket.value?.on('get-users', async (users: ChatSession[]) => {
+socket().on('get-users', async (users: ChatSession[]) => {
     const usersData = users
     let userIds: string[] = usersData.map(session => session.user_id)
     await getMultipleUsers(userIds)
@@ -112,10 +108,10 @@ function handleClickUser(user_id?: string) {
 }
 
 function handleSocketDisconnect(): void {
-    if (socket.value) {
-        socket.value.off('get-users')
-        socket.value.offAny()
-        socket.value.disconnect()
+    if (socket()) {
+        socket().off('get-users')
+        socket().offAny()
+        socket().disconnect()
         console.log('cleanup')
     }
 }
@@ -131,9 +127,9 @@ onBeforeUnmount(() => {
 })
 
 onMounted(() => {
-    if (socket.value && !socket.value.connected) {
+    if (socket() && !socket().connected) {
         console.log('try to connecting')
-        socket.value.connect()
+        authSocket()
     }
 })
 </script>

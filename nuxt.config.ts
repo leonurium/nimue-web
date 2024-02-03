@@ -7,7 +7,8 @@ export default defineNuxtConfig({
         "@vueuse/nuxt",
         "nuxt-icon",
         "nuxt-lucide-icons",
-        "@vee-validate/nuxt"
+        "@vee-validate/nuxt",
+        "@nuxtjs/cloudinary"
     ],
 
     tailwindcss: {
@@ -46,11 +47,20 @@ export default defineNuxtConfig({
         namePrefix: 'Icon'
     },
 
+    cloudinary: {
+        cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+        apiKey: process.env.CLOUDINARY_API_KEY,
+        uploadPreset: process.env.CLOUDINARY_PRESET_UPLOAD
+    },
+
     runtimeConfig: {
         public: {
             app_name: "Netijen Curhat",
             base_api_url: process.env.BASE_URL_API,
-            base_socket_url: process.env.BASE_URL_SOCKET
+            base_socket_url: process.env.BASE_URL_SOCKET,
+            cloudinary: {
+                uploadPreset: process.env.CLOUDINARY_PRESET_UPLOAD
+            }
         },
     },
 

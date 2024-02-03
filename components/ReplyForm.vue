@@ -12,6 +12,21 @@
                 :src="props.user.avatar"
                 :fallback="getInitials(props.user.name)"
             />
+            <CldUploadButton
+                v-if="props.withImageUpload"
+                :options="{
+                    maxFiles: 1
+                }"
+                :on-success="(result: CloudinaryUploadResponse, widget: any) => {
+                    console.log('Callback triggered');
+                    console.log(result)
+                }"
+                :on-upload="handleUpload"
+                :on-upload-added="handleUpload"
+                upload-preset="nimue_upload_preset"
+                class="items-center justify-center relative flex h-9 w-9 shrink-0 overflow-hidden rounded-full text-primary-foreground bg-primary">
+                <IconImage/>
+            </CldUploadButton>
             <UiInput
                 @update:model-value="handleInputUpdateModelValue"
                 v-model="replyText"
@@ -27,19 +42,24 @@
 <script lang="ts" setup>
 import type { User } from '~/types/user';
 import usePreferencesService from '~/composables/usePreferencesService';
+import type { CloudinaryUploadResponse } from '~/types/cloudinary';
 
 const { getReplyEmojis } = usePreferencesService()
-const { useAuthUser } = useAuth()
-const user = useAuthUser().value as User
 const emojis: string[] = getReplyEmojis()
 const replyText = ref('')
+const preset = useRuntimeConfig().public.cloudinary.uploadPreset
 
-const emits = defineEmits(['onSubmit', 'onKeypress'])
+const emits = defineEmits(['onSubmit', 'onKeypress', 'onUpload'])
 
 const props = defineProps({
     user: {
         type: Object as () => User,
         required: true
+    },
+    withImageUpload: {
+        type: Boolean,
+        required: false,
+        default: false
     }
 })
 
@@ -49,6 +69,12 @@ function emojiClicked(index: number) {
 
 const handleInputUpdateModelValue = (value: string) => {
     emits('onKeypress', value)
+}
+
+const handleUpload = (value: CloudinaryUploadResponse, widget: any) => {
+    console.log('Callback triggered');
+    console.log('from reply: ', value)
+    emits('onUpload', value)
 }
 
 const submitReply = () => {

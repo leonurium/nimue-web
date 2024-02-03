@@ -16,8 +16,23 @@
                 'bg-primary text-primary-foreground': props.is_sender
             }" class="relative text-sm py-2 px-4 shadow rounded-xl">
                 <div v-if="props.is_typing" class="italic">Typing...</div>
-                <div v-if="textMessage?.text" class="flex flex-col">
-                    <div>{{ textMessage?.text }}</div>
+                <div class="flex flex-col">
+                    <div v-if="textMessage?.text">{{ textMessage?.text }}</div>
+                    <div v-else-if="imageMessage?.url_image">
+                        <CldImage
+                            :src="imageMessage.url_image"
+                            width="288"
+                            height="288"
+                            alt="image"
+                            class="
+                            object-cover
+                            cursor-pointer
+                            hover:scale-110
+                            transition
+                            translate
+                            "
+                        />
+                    </div>
 
                     <div class="flex flex-row items-center gap-1 text-[9px] ml-auto">{{
                         props.timestamp.toLocaleTimeString() }}
@@ -36,7 +51,8 @@
 import {
     type ContentMessage,
     TypeContentMessage,
-    TextMessage
+    TextMessage,
+    ImageMessage
 } from '~/types/chat_message';
 
 const props = defineProps({
@@ -73,12 +89,16 @@ const props = defineProps({
 const emits = defineEmits(['onRender'])
 const containerMessage = ref<HTMLElement | undefined>(undefined)
 const textMessage = ref<TextMessage>()
+const imageMessage = ref<ImageMessage>()
 const appear = ref(false)
 
 onBeforeMount(() => {
     switch (props.content_message?.type) {
         case TypeContentMessage.text:
             textMessage.value = props.content_message as TextMessage
+            break;
+        case TypeContentMessage.image:
+            imageMessage.value = props.content_message as ImageMessage
             break;
     }
 })

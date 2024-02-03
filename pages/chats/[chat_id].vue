@@ -16,13 +16,14 @@
                     :is_read="message.is_read ?? false" @onRender="handleOnRender(message)" />
             </div>
         </div>
-        <ReplyForm class="sticky bottom-14 border-t" :user="user" @onSubmit="handleSendMessage"
-            @onKeypress="handleKeypress" />
+        <ReplyForm class="sticky bottom-14 border-t" :user="user" @onSubmit="handleSendMessage" @onKeypress="handleKeypress"
+            @handleUpload="handleUpload" withImageUpload />
     </NuxtLayout>
 </template>
 <script lang="ts" setup>
 import type { User } from "~/types/user";
 import {
+    ImageMessage,
     TextMessage,
     type ChatMessage,
     type ChatSession,
@@ -30,12 +31,11 @@ import {
 } from "~/types/chat_message"
 
 definePageMeta({
-    middleware: 'socket',
     layout: false
 })
 
-const socket = useSocket()
 const { chat_id } = useRoute().params
+const { socket, authSocket } = useSocket()
 const { getUserById } = useUserService()
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
@@ -58,8 +58,28 @@ const handleSendMessage = (message: string) => {
             is_read: false
         }
 
-        socket.value?.emit('message', data)
+        socket().emit('message', data)
     }
+}
+
+const handleUpload = (value: any) => {
+    
+    if (secondUser.value) {
+        console.log('from chat id', value)
+        const image_url = value?.info?.secure_url
+        console.log('image_url: ', image_url)
+        const content = new ImageMessage(image_url)
+        const data: ChatMessage = {
+            from: user.user_id,
+            to: secondUser.value.user_id,
+            chat_id: crypto.randomUUID(),
+            content: content,
+            timestamp: (new Date()),
+            is_read: false
+        }
+
+        socket().emit('message', data)
+    }    
 }
 
 const handleKeypress = () => {
@@ -71,31 +91,31 @@ const handleKeypress = () => {
             timestamp: (new Date()),
             is_typing: true
         }
-        socket.value?.emit('typing', data)
+        socket().emit('typing', data)
     }
 }
 
 const handleOnRender = (data: ChatMessage) => {
     if (data.is_read != true && data.from != user.user_id) {
         console.log("handle on render: ", data)
-        socket.value?.emit('mark-message-read', data)
+        socket().emit('mark-message-read', data)
     }
 }
 
-socket.value?.on('get-messages', (response: ResponseChatMessage) => {
+socket().on('get-messages', (response: ResponseChatMessage) => {
     console.log(response)
     page.value = response.next_page
     messages.value.unshift(...response.messages)
     loading.value = false
 })
 
-socket.value?.on('message', (data: ChatMessage) => {
+socket().on('message', (data: ChatMessage) => {
     removeTypingFromMessages()
     messages.value = messages.value.concat(data)
     console.log(messages.value)
 })
 
-socket.value?.on('typing', (data: ChatMessage) => {
+socket().on('typing', (data: ChatMessage) => {
     if (!typingIsExist() && data.from === secondUser.value?.user_id) {
         messages.value = messages.value.concat(data)
 
@@ -106,7 +126,7 @@ socket.value?.on('typing', (data: ChatMessage) => {
     }
 })
 
-socket.value?.on('mark-message-read', (data: ChatMessage) => {
+socket().on('mark-message-read', (data: ChatMessage) => {
     console.log('mark-message-read', data)
     if (user.user_id == data.from) {
         for (let index = 0; index < messages.value.length; index++) {
@@ -118,12 +138,12 @@ socket.value?.on('mark-message-read', (data: ChatMessage) => {
     }
 })
 
-socket.value?.on('user-joined', (data: ChatSession) => {
+socket().on('user-connected', (data: ChatSession) => {
     // update user in online / connected
     updateStatusUser(data, "user-online: ")
 })
 
-socket.value?.on('user-disconnected', (data: ChatSession) => {
+socket().on('user-disconnected', (data: ChatSession) => {
     // update user is offline / disconnected
     updateStatusUser(data, "user-offline: ")
 })
@@ -169,7 +189,7 @@ function getSessionOtherUser(user?: User): ChatSession | undefined {
 function getMessages(user_id?: string, pageNumber?: number, itemPerPageNumber?: number) {
     if (!loading.value) {
         loading.value = true
-        socket.value?.emit('request-messages', ({
+        socket().emit('request-messages', ({
             user_id: user_id ?? secondUser.value?.user_id,
             page: pageNumber ?? page.value,
             item_per_page: itemPerPageNumber ?? itemPerPage
@@ -178,15 +198,15 @@ function getMessages(user_id?: string, pageNumber?: number, itemPerPageNumber?: 
 }
 
 function handleSocketDisconnect(): void {
-    if (socket.value) {
-        socket.value.off('get-messages')
-        socket.value.off('message')
-        socket.value.off('typing')
-        socket.value.off('mark-message-read')
-        socket.value.off('user-joined')
-        socket.value.off('user-disconnected')
-        socket.value.offAny()
-        socket.value.disconnect()
+    if (socket()) {
+        socket().off('get-messages')
+        socket().off('message')
+        socket().off('typing')
+        socket().off('mark-message-read')
+        socket().off('user-joined')
+        socket().off('user-disconnected')
+        socket().offAny()
+        socket().disconnect()
         console.log('cleanup')
     }
 }
@@ -202,9 +222,9 @@ onBeforeUnmount(() => {
 })
 
 onMounted(() => {
-    if (socket.value && !socket.value.connected) {
+    if (socket() && !socket().connected) {
         console.log('try to connecting')
-        socket.value.connect()
+        authSocket()
     }
 })
 
