@@ -1,5 +1,5 @@
 export default () => {
-
+    const router = useRouter()
     const navRoutes = () => useState('nav_routes')
 
     const register = (newRoutes: NavRoute[]) => {
@@ -22,10 +22,10 @@ export default () => {
         ]
 
         //validate
-        const router = useRouter().getRoutes()
+        const routers = router.getRoutes()
         const routesValidated: NavRoute[] = []
         routes.forEach(route => {
-            const foundR = router.find(r => r.path === route.href)
+            const foundR = routers.find(r => r.path === route.href)
             if(foundR) {
                 routesValidated.push(route)
             }
@@ -35,9 +35,14 @@ export default () => {
         register(routesValidated)
     }
 
+    function navBack() {
+        router.back()
+    }
+
     return {
+        initRoute,
         navRoutes,
-        initRoute
+        navBack
     }
 }
 

@@ -1,13 +1,14 @@
 <template>
-    <div class="w-full justify-center max-w-2xl mx-auto p-6">
+    <div class="overflow-auto h-[calc(100svh-56px-56px)] p-6">
         <CardThreads :timeline="timeline" compact />
-        <UiDivider class="pt-4 pb-4" />
+        <UiDivider class="pt-3 pb-3" />
         <form @submit="onSubmit">
             <Field name="reason" v-slot="{ componentField }">
                 <UiFormItem class="space-y-5">
                     <p class="text-lg font-medium">Why are you reporting this post?</p>
-                    <p class="text-sm font-normal">You report is anonymous, except if you're reporting an intellectual
-                        property infringement. if someone is in immediate danger, call the local emergency services - don't
+                    <p class="text-sm font-normal">Your report is anonymous, except if you're reporting an intellectual
+                        property infringement. if someone is in immediate danger, call the local emergency services -
+                        don't
                         wait.</p>
                     <UiRadioGroup v-bind="componentField">
                         <UiFormItem v-for="reason in reasons" hideMessage
@@ -18,11 +19,7 @@
                 </UiFormItem>
             </Field>
             <div class="mt-6">
-                <UiButton
-                    variant="destructive"
-                    type="submit"
-                    :disabled="loadingReport"
-                >Report
+                <UiButton variant="destructive" type="submit" :disabled="loadingReport">Report
                 </UiButton>
             </div>
         </form>
@@ -57,7 +54,7 @@ const { handleSubmit } = useForm({
     ),
 });
 
-const onSubmit = handleSubmit( async (values) => {
+const onSubmit = handleSubmit(async (values) => {
     loadingReport.value = true
     await report(
         user.user_id,
@@ -80,7 +77,7 @@ const onSubmit = handleSubmit( async (values) => {
         })
 });
 
-onBeforeMount( async () => {
+onBeforeMount(async () => {
     await getTimelineById(Number(timeline_id))
         .then((result) => {
             const data = result as Timeline
@@ -90,7 +87,7 @@ onBeforeMount( async () => {
             console.log(error)
         })
         .finally(() => {
-            
+
         })
 })
 

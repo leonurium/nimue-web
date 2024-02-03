@@ -10,10 +10,12 @@
                         <IconSunMedium class="h-4 w-4" />
                     </UiButton>
                     <UiButton v-if="user" @click="handleNewPost" size="sm">
-                        New Post
+                        <span class="hidden lg:block">New Post</span>
+                        <IconSquarePen class="lg:hidden h-4 w-4"/>
                     </UiButton>
                     <UiButton v-if="user" @click="handleLogout" variant="secondary" size="sm">
-                        Logout
+                        <span class="hidden lg:block">Logout</span>
+                        <IconLogOut class="lg:hidden h-4 w-4"/>
                     </UiButton>
                 </div>
             </UiContainer>

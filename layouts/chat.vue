@@ -2,6 +2,13 @@
     <div class="max-w-2xl mx-auto h-screen">
         <UiNavbar sticky>
             <UiContainer class="flex h-14 items-center justify-between">
+                <UiButton class="rounded-full"
+                    variant="ghost"
+                    size="icon-sm"
+                    @click="navBack"
+                >
+                    <IconChevronLeft/>
+                </UiButton>
                 <div class="flex flex-row items-center">
                     <p class="text-base font-semibold pr-3">{{ session?.user?.name }}</p>
                     <ChatStatusIcon :isOnline="session?.connected" />
@@ -33,7 +40,7 @@ const props = defineProps({
     }
 })
 
-const { navRoutes, initRoute } = useNavRoute()
+const { initRoute, navRoutes, navBack } = useNavRoute()
 initRoute()
 const routes = navRoutes().value as NavRoute[]
 
