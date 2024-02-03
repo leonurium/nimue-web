@@ -12,21 +12,20 @@
                 :src="props.user.avatar"
                 :fallback="getInitials(props.user.name)"
             />
-            <CldUploadButton
+            <CldUploadWidget
                 v-if="props.withImageUpload"
-                :options="{
-                    maxFiles: 1
-                }"
-                :on-success="(result: CloudinaryUploadResponse, widget: any) => {
-                    console.log('Callback triggered');
-                    console.log(result)
-                }"
-                :on-upload="handleUpload"
-                :on-upload-added="handleUpload"
-                upload-preset="nimue_upload_preset"
-                class="items-center justify-center relative flex h-9 w-9 shrink-0 overflow-hidden rounded-full text-primary-foreground bg-primary">
-                <IconImage/>
-            </CldUploadButton>
+                v-slot="{ open }"
+                :onUpload="handleUpload"
+                uploadPreset="nimue_upload_preset">
+                <UiButton
+                    class="rounded-full h-10 w-10 shrink-0"
+                    @click="open"
+                    size="icon-sm"
+                >
+                    <IconImage class="h-4 w-4"/>
+                </UiButton>
+            </CldUploadWidget>
+
             <UiInput
                 @update:model-value="handleInputUpdateModelValue"
                 v-model="replyText"
@@ -71,10 +70,11 @@ const handleInputUpdateModelValue = (value: string) => {
     emits('onKeypress', value)
 }
 
-const handleUpload = (value: CloudinaryUploadResponse, widget: any) => {
-    console.log('Callback triggered');
-    console.log('from reply: ', value)
-    emits('onUpload', value)
+const handleUpload = (value: CloudinaryUploadResponse) => {
+    //passing url if success
+    if(value._value.event == 'success') {
+        emits('onUpload', value._value.info.secure_url)
+    }
 }
 
 const submitReply = () => {

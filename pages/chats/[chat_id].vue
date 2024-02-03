@@ -17,7 +17,7 @@
             </div>
         </div>
         <ReplyForm class="sticky bottom-14 border-t" :user="user" @onSubmit="handleSendMessage" @onKeypress="handleKeypress"
-            @handleUpload="handleUpload" withImageUpload />
+            @onUpload="handleUpload" withImageUpload />
     </NuxtLayout>
 </template>
 <script lang="ts" setup>
@@ -62,12 +62,9 @@ const handleSendMessage = (message: string) => {
     }
 }
 
-const handleUpload = (value: any) => {
-    
+const handleUpload = (value: string) => {
     if (secondUser.value) {
-        console.log('from chat id', value)
-        const image_url = value?.info?.secure_url
-        console.log('image_url: ', image_url)
+        const image_url = value
         const content = new ImageMessage(image_url)
         const data: ChatMessage = {
             from: user.user_id,
