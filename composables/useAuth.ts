@@ -45,6 +45,7 @@ export default () => {
                     const data = response.data as BaseLoginData
                     setToken(data.access_token)
                     setUser(data.user)
+                    window.location.reload()
                     resolve(true)
                 } else {
                     reject(response.message)
@@ -74,6 +75,7 @@ export default () => {
                     const data = response.data as BaseLoginData
                     setToken(data.access_token)
                     setUser(data.user)
+                    window.location.reload()
                     resolve(true)
                 } else {
                     reject(response.message)

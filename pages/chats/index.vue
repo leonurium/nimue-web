@@ -127,7 +127,7 @@ onBeforeUnmount(() => {
 })
 
 onMounted(() => {
-    if (socket() && !socket().connected) {
+    if (!socket().connected) {
         console.log('try to connecting')
         authSocket()
     }

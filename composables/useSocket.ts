@@ -3,6 +3,7 @@ import type { User } from "~/types/user";
 
 // const socket = ref<Socket>();
 export default () => {
+    const KEY_SESSION_ID = 'chat_session_id'
     const stateSocket = () => useState('state_socket')
 
     const socket = () => {
@@ -29,7 +30,7 @@ export default () => {
     const authSocket = () => {
         const { useAuthUser } = useAuth()
         const user = useAuthUser().value as User
-        const session_id = localStorage.getItem("chat_session_id");
+        const session_id = localStorage.getItem(KEY_SESSION_ID);
 
         if (user && session_id) {
             if (socket() && !socket().connected) {
@@ -50,7 +51,7 @@ export default () => {
                         // socket sending auth user_id and session session_id
                         socket().auth = { user_id: user.user_id, session_id: session_id }
                         // store it in the localStorage
-                        localStorage.setItem("chat_session_id", session_id);
+                        localStorage.setItem(KEY_SESSION_ID, session_id);
                     }
                 });
             }

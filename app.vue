@@ -2,9 +2,7 @@
     <div>
         <NuxtLoadingIndicator />
         <div v-if="isAuthLoading">
-            <NuxtLayout>
-                <SplashScreen />
-            </NuxtLayout>
+            <SplashScreen />
         </div>
         <div v-else-if="user">
             <NuxtLayout :user="user">
@@ -12,9 +10,9 @@
             </NuxtLayout>
         </div>
         <div v-else>
-            <!-- <NuxtLayout> -->
-                <AuthPage/>
-            <!-- </NuxtLayout> -->
+            <NuxtLayout>
+                <AuthPage />
+            </NuxtLayout>
         </div>
 
         <UiToastToaster />
@@ -22,12 +20,20 @@
 </template>
 
 <script lang="ts" setup>
+
 const { useAuthUser, initAuth, useAuthLoading } = useAuth()
+const { authSocket, socket } = useSocket()
+
 const user = useAuthUser()
 const isAuthLoading = useAuthLoading()
 
-onBeforeMount (() => {
+onBeforeMount(() => {
     initAuth()
-})
+        .then((result) => {
+            if (result && !socket().connected) {
+                authSocket()
+            }
+        });
+});
 
 </script>
