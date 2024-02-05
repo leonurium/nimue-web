@@ -33,7 +33,12 @@
                 placeholder="mau bales apa?"
                 required
             />
-            <UiButton type="submit" class="rounded-full">Send</UiButton>
+            <UiButton type="submit"
+                class="lg:h-10 lg:w-16 w-10 h-10 shrink-0 rounded-full"
+                size="icon-sm">
+                <span class="hidden lg:block">Send</span>
+                <IconSend class="lg:hidden h-4 w-4"/>
+            </UiButton>
         </form>
     </div>
 </template>

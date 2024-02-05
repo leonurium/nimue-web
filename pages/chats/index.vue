@@ -57,7 +57,7 @@ const getLastMessageInfo = (messages?: ChatMessage[]): { lastMessage: string, la
     const lastItem = (messages?.length ?? 1) - 1
     const message = messages?.at(lastItem)
     if (message && message.content) {
-        const lastMessageTime = getTimeAgo((new Date(message.timestamp)).toISOString())
+        const lastMessageTime = getTimeAgo((new Date(message.created_at)).toISOString())
         switch (message.content.type) {
             case TypeContentMessage.text:
                 const msg = message.content as TextMessage

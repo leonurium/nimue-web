@@ -7,12 +7,12 @@
             <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
                 <!-- typing -->
                 <ChatBubble v-if="message.is_typing ?? false" :username="getUserFromSession(message.from)?.name"
-                    :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.timestamp)"
+                    :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.created_at)"
                     :is_sender="message.from == user.user_id" :is_typing="message.is_typing" />
                 <!-- chat bubble from -->
-                <ChatBubble v-else :key="message.chat_id" :username="getUserFromSession(message.from)?.name"
+                <ChatBubble v-else :key="message.message_id" :username="getUserFromSession(message.from)?.name"
                     :content_message="message.content" :avatar="getUserFromSession(message.from)?.avatar"
-                    :timestamp="new Date(message.timestamp)" :is_sender="message.from == user.user_id"
+                    :timestamp="new Date(message.created_at)" :is_sender="message.from == user.user_id"
                     :is_read="message.is_read ?? false" @onRender="handleOnRender(message)" />
             </div>
         </div>
@@ -52,9 +52,9 @@ const handleSendMessage = (message: string) => {
         const data: ChatMessage = {
             from: user.user_id,
             to: secondUser.value.user_id,
-            chat_id: crypto.randomUUID(),
+            message_id: crypto.randomUUID(),
             content: content,
-            timestamp: (new Date()),
+            created_at: (new Date()),
             is_read: false
         }
 
@@ -69,9 +69,9 @@ const handleUpload = (value: string) => {
         const data: ChatMessage = {
             from: user.user_id,
             to: secondUser.value.user_id,
-            chat_id: crypto.randomUUID(),
+            message_id: crypto.randomUUID(),
             content: content,
-            timestamp: (new Date()),
+            created_at: (new Date()),
             is_read: false
         }
 
@@ -84,8 +84,8 @@ const handleKeypress = () => {
         const data: ChatMessage = {
             from: user.user_id,
             to: secondUser.value.user_id,
-            chat_id: crypto.randomUUID(),
-            timestamp: (new Date()),
+            message_id: crypto.randomUUID(),
+            created_at: (new Date()),
             is_typing: true
         }
         socket().emit('typing', data)
@@ -127,7 +127,7 @@ socket().on('mark-message-read', (data: ChatMessage) => {
     console.log('mark-message-read', data)
     if (user.user_id == data.from) {
         for (let index = 0; index < messages.value.length; index++) {
-            if (messages.value[index].chat_id === data.chat_id) {
+            if (messages.value[index].message_id === data.message_id) {
                 messages.value[index].is_read = true
                 console.log("update as read is achieve yeay!")
             }
@@ -186,11 +186,13 @@ function getSessionOtherUser(user?: User): ChatSession | undefined {
 function getMessages(user_id?: string, pageNumber?: number, itemPerPageNumber?: number) {
     if (!loading.value) {
         loading.value = true
-        socket().emit('request-messages', ({
+        const data = {
             user_id: user_id ?? secondUser.value?.user_id,
             page: pageNumber ?? page.value,
             item_per_page: itemPerPageNumber ?? itemPerPage
-        }))
+        }
+        socket().emit('request-messages', data)
+        console.log('request messages')
     }
 }
 
@@ -219,7 +221,7 @@ onBeforeUnmount(() => {
 })
 
 onMounted(() => {
-    if (socket() && !socket().connected) {
+    if (!socket().connected) {
         console.log('try to connecting')
         authSocket()
     }

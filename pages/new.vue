@@ -11,7 +11,7 @@
                 </UiFormItem>
             </Field>
             <UiButton :disabled="loading" type="submit">Post
-                <IconSend
+                <IconSquarePen
                     class="h-4 w-4"
                     :class="{
                         'animate-pulse': loading

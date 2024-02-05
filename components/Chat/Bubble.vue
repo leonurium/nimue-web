@@ -21,6 +21,7 @@
                     <div v-else-if="imageMessage?.url_image">
                         <CldImage
                             :src="imageMessage.url_image"
+                            format="webp"
                             width="288"
                             height="288"
                             alt="image"

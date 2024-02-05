@@ -14,13 +14,13 @@ export interface ResponseChatMessage {
 }
 
 export interface ChatMessage {
+    message_id:     string;
     from:           string;
     to:             string;
-    chat_id:        string;
     content?:       ContentMessage;
-    timestamp:      Date;
     is_typing?:     boolean;
     is_read?:       boolean;
+    created_at:     Date;
 }
 
 export interface ContentMessage {
