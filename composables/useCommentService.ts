@@ -2,7 +2,8 @@ import type { CommentsData } from "~/types/comment";
 import type { User } from "~/types/user";
 
 export default () => {
-    const base_url = useRuntimeConfig().public.base_api_url;
+    const config_public = useRuntimeConfig().public
+    const base_url = config_public.base_api_url + config_public.api_version
 
     const getCommentByTimelineId = async (timeline_id: number, page: number, itemPerPage: number) => {
         return new Promise(async (resolve, reject) => {

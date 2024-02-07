@@ -1,7 +1,10 @@
+import type { BaseResponse } from "~/types";
 import type { Preferences } from "~/types/preferences";
 
 export default () => {
-    const base_url = useRuntimeConfig().public.base_api_url;
+    const config_public = useRuntimeConfig().public
+    const base_url = config_public.base_api_url + config_public.api_version
+
     const useAppPreferences = () => useState('app_preferences')
 
     const setPreferences = (value: Preferences) => {
@@ -12,7 +15,7 @@ export default () => {
     const getPreferences = async () => {
         return new Promise(async(resolve, reject) => {
             try {
-                const response = await useFetchApi(
+                const response = await $fetch<BaseResponse>(
                     `${base_url}/preferences/`,
                     { method: 'GET' }
                 );

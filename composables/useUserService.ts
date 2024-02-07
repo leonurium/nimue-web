@@ -1,7 +1,8 @@
 import type { User } from "~/types/user";
 
 export default () => {
-    const base_url = useRuntimeConfig().public.base_api_url;
+    const config_public = useRuntimeConfig().public
+    const base_url = config_public.base_api_url + config_public.api_version
 
     const getUserById = async (user_id: string) => {
         return new Promise(async (resolve, reject) => {

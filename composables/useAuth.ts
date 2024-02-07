@@ -2,7 +2,8 @@ import type { BaseResponse, BaseLoginData, RefreshTokenData } from "~/types";
 import type { User } from "~/types/user";
 
 export default () => {
-    const base_url = useRuntimeConfig().public.base_api_url;
+    const config_public = useRuntimeConfig().public
+    const base_url = config_public.base_api_url + config_public.api_version
     const { getDeviceId } = useDevice();
     const { getPreferences } = usePreferencesService();
 
@@ -140,7 +141,6 @@ export default () => {
     const refreshToken = () => {
         return new Promise(async (resolve, reject) => {
             try {
-                const deviceId = getDeviceId();
                 const response = await $fetch<BaseResponse>(
                     `${base_url}/auth/refresh/`,
                     { method: 'GET', credentials: 'include' }

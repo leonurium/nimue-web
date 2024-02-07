@@ -1,7 +1,8 @@
 import type { Timeline, TimelinesData } from "~/types/timeline";
 
 export default () => {
-    const base_url = useRuntimeConfig().public.base_api_url;
+    const config_public = useRuntimeConfig().public
+    const base_url = config_public.base_api_url + config_public.api_version
 
     const getTimelines = async (user_id: string, page: string, itemPerPage: string) => {
         return new Promise(async (resolve, reject) => {
