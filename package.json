@@ -13,6 +13,7 @@
     "shortcut": "npx ui-thing@latest shortcuts"
   },
   "devDependencies": {
+    "@dargmuesli/nuxt-cookie-control": "^7.2.5",
     "@ianvs/prettier-plugin-sort-imports": "^4.1.1",
     "@nuxtjs/color-mode": "^3.3.2",
     "@nuxtjs/tailwindcss": "^6.10.4",

@@ -8,7 +8,8 @@ export default defineNuxtConfig({
         "nuxt-icon",
         "nuxt-lucide-icons",
         "@vee-validate/nuxt",
-        "@nuxtjs/cloudinary"
+        "@nuxtjs/cloudinary",
+        "@dargmuesli/nuxt-cookie-control"
     ],
 
     tailwindcss: {
@@ -45,6 +46,10 @@ export default defineNuxtConfig({
 
     lucide: {
         namePrefix: 'Icon'
+    },
+
+    cookieControl: {
+
     },
 
     cloudinary: {
