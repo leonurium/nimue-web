@@ -25,11 +25,11 @@
                                 </UiFormItem>
                             </Field>
                             <div class="flex flex-col gap-2">
-                                <UiButton type="submit">Register</UiButton>
+                                <UiButton type="submit" :disabled="loading">Register</UiButton>
                             </div>
 
                             <p class="text-sm text-center">Already have an account? <NuxtLink class="text-primary"
-                                    to="/login">Login</NuxtLink>
+                                    to="/login" :disabled="loading">Login</NuxtLink>
                             </p>
                         </UiCardContent>
                     </template>
@@ -37,8 +37,8 @@
 
                 <div class="mt-auto text-sm text-center">
                     <p class="text-sm text-center">By clicking on the "Register" button, you agree to our <NuxtLink
-                            class="text-primary" to="/user-agreement">User Agreement</NuxtLink> and our <NuxtLink
-                            class="text-primary" to="/privacy-policy">Privacy Policy</NuxtLink>
+                            class="text-primary" to="/user-agreement" :disabled="loading">User Agreement</NuxtLink> and our <NuxtLink
+                            class="text-primary" to="/privacy-policy" :disabled="loading">Privacy Policy</NuxtLink>
                     </p>
                 </div>
             </div>
@@ -70,7 +70,7 @@ const { handleSubmit } = useForm({
                 .regex(/[a-z]/, { message: "Password must contain at least one lowercase letter (a-z)" })
                 .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter (A-Z)" })
                 .regex(/[0-9]/, { message: "Password must contain at least one digit (0-9)" }),
-                // .regex(/[!@#$%^&*()?]/i, { message: "Password must contain at least one special character from @$!%*?&" }),
+            // .regex(/[!@#$%^&*()?]/i, { message: "Password must contain at least one special character from @$!%*?&" }),
             confirm_password: z
                 .string({
                     required_error: "required"
@@ -83,8 +83,8 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-    loading.value = true
-    try {
+    if (!loading.value) {
+        loading.value = true
         await register(values.email, values.password)
             .then(async (succes) => {
                 if (succes) {
@@ -94,9 +94,9 @@ const onSubmit = handleSubmit(async (values) => {
             .catch((error) => {
                 showMessage(error, TypeMessage.destructive)
             })
-
-    } catch (error) {
-        console.log(error)
+            .finally(() => {
+                loading.value = false
+            })
     }
 });
 

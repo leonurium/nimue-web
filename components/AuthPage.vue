@@ -20,14 +20,14 @@
                                 </UiFormItem>
                             </Field>
                             <div class="flex flex-col gap-2">
-                                <UiButton type="submit">Login</UiButton>
-                                <UiButton @click="loginAsAnonymousClicked" variant="secondary">
+                                <UiButton type="submit" :disabled="loading">Login</UiButton>
+                                <UiButton @click="loginAsAnonymousClicked" variant="secondary" :disabled="loading">
                                     <IconVenetianMask /> Login As Anonymous
                                 </UiButton>
                             </div>
 
                             <p class="text-sm text-center">Don't have an account? <NuxtLink class="text-primary"
-                                    to="/register">Register</NuxtLink>
+                                    to="/register" :disabled="loading">Register</NuxtLink>
                             </p>
                         </UiCardContent>
                     </template>
@@ -35,8 +35,8 @@
 
                 <div class="mt-auto text-sm text-center">
                     <p class="text-sm text-center">By clicking on the "Login" button, you agree to our <NuxtLink
-                            class="text-primary" to="/user-agreement">User Agreement</NuxtLink> and our <NuxtLink
-                            class="text-primary" to="/privacy-policy">Privacy Policy</NuxtLink>
+                            class="text-primary" to="/user-agreement" :disabled="loading">User Agreement</NuxtLink> and our
+                        <NuxtLink class="text-primary" to="/privacy-policy" :disabled="loading">Privacy Policy</NuxtLink>
                     </p>
                 </div>
             </div>
@@ -46,8 +46,10 @@
 
 <script lang="ts" setup>
 import { z } from "zod";
+import { TypeMessage } from "~/types";
 
 const { login, loginAsAnonymous, registerAnonymous } = useAuth()
+const { showMessage } = useMessage()
 const loading = ref(false);
 
 const { handleSubmit } = useForm({
@@ -68,17 +70,24 @@ const { handleSubmit } = useForm({
 });
 
 const onSubmit = handleSubmit(async (values) => {
-    loading.value = true
-    try {
+    if (!loading.value) {
+        loading.value = true
         await login(values.email, values.password)
-
-    } catch (error) {
-        console.log(error)
+            .then(() => {
+                console.log("login user")
+            })
+            .catch((error) => {
+                showMessage(error, TypeMessage.destructive)
+            })
+            .finally(() => {
+                loading.value = false
+            })
     }
 });
 
 async function loginAsAnonymousClicked() {
-    try {
+    if (!loading.value) {
+        loading.value = true
         await loginAsAnonymous()
             .then((result) => {
                 console.log("login as anonymous")
@@ -99,10 +108,8 @@ async function loginAsAnonymousClicked() {
                     })
             })
             .finally(() => {
-                //do something
+                loading.value = false
             })
-    } catch (error) {
-        console.log(error)
     }
 }
 </script>
