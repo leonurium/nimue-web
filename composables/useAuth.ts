@@ -88,6 +88,34 @@ export default () => {
         })
     };
 
+    const register = (email: string, password: string) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const deviceId = getDeviceId();
+                const response = await $fetch<BaseResponse>(
+                    `${base_url}/register/user/`,
+                    {
+                        method: 'POST',
+                        body: {
+                            'email': email,
+                            'password': password,
+                            'device_id': deviceId
+                        },
+                        credentials: 'include'
+                    }
+                );
+                if (response.success) {        
+                    resolve(true)
+                } else {
+                    reject(response.message)
+                }
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
+    }
+
     const registerAnonymous = () => {
         return new Promise(async (resolve, reject) => {
             try {
@@ -180,6 +208,7 @@ export default () => {
         useAuthLoading,
         login,
         loginAsAnonymous,
+        register,
         registerAnonymous,
         useAuthUser,
         useAuthToken,

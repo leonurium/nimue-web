@@ -2,7 +2,9 @@
     <div>
         <NuxtLoadingIndicator />
         <div v-if="isAuthLoading">
-            <SplashScreen />
+            <NuxtLayout name="empty">
+                <SplashScreen />
+            </NuxtLayout>
         </div>
         <div v-else-if="user">
             <NuxtLayout :user="user">
@@ -11,9 +13,9 @@
             </NuxtLayout>
         </div>
         <div v-else>
-            <!-- <NuxtLayout> -->
-            <AuthPage />
-            <!-- </NuxtLayout> -->
+            <NuxtLayout name="empty">
+                <NuxtPage />
+            </NuxtLayout>
         </div>
 
         <UiToastToaster />
@@ -21,6 +23,7 @@
 </template>
 
 <script lang="ts" setup>
+import type { User } from './types/user';
 
 const { useAuthUser, initAuth, useAuthLoading } = useAuth()
 const { authSocket, socket } = useSocket()
@@ -34,6 +37,7 @@ const {
 
 const user = useAuthUser()
 const isAuthLoading = useAuthLoading()
+const route = useRoute()
 
 // example: react to a cookie being accepted
 watch(
@@ -50,13 +54,34 @@ watch(
     { deep: true },
 )
 
+watch(user, async (current, previous) => {
+    if (current && !previous) {
+        if ([
+            "login",
+            "register"
+        ].includes(route.name?.toString() ?? "")) {
+            return await navigateTo("/")
+        }
+    }
+}, { deep: true })
+
 onBeforeMount(() => {
     initAuth()
         .then((result) => {
             if (result && !socket().connected) {
                 authSocket()
             }
-        });
-});
+        })
+        .catch(async (error) => {
+            if (![
+                "login",
+                "register",
+                "user-agreement",
+                "privacy-policy"
+            ].includes(route.name?.toString() ?? "")) {
+                return await navigateTo("/login")
+            }
+        })
+})
 
 </script>
