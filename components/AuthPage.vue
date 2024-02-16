@@ -48,7 +48,7 @@
 import { z } from "zod";
 import { TypeMessage } from "~/types";
 
-const { login, loginAsAnonymous, registerAnonymous } = useAuth()
+const { login, loginAsAnonymous } = useAuth()
 const { showMessage } = useMessage()
 const loading = ref(false);
 
@@ -88,14 +88,9 @@ const onSubmit = handleSubmit(async (values) => {
 async function loginAsAnonymousClicked() {
     if (!loading.value) {
         loading.value = true
-        await registerAnonymous()
-            .then(async (result) => {
-                console.log(result)
-                await loginAsAnonymous()
-            })
-            .catch(async (error) => {
+        await loginAsAnonymous()
+            .catch((error) => {
                 console.log(error)
-                await loginAsAnonymous()
             })
             .finally(() => {
                 loading.value = false
