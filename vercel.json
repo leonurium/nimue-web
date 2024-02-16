@@ -1,15 +1,9 @@
 {
     "version": 2,
-    "rewrites": [
-        {
-            "source": "/(.*)",
-            "destination": "/"
-        }
-    ],
     "routes": [
         {
-            "src": "/(.*)",
-            "dest": "/",
+            "source": "/(.*)",
+            "destination": "/",
             "methods": [
                 "GET",
                 "POST",
