@@ -89,7 +89,12 @@ async function loginAsAnonymousClicked() {
     if (!loading.value) {
         loading.value = true
         await registerAnonymous()
+            .then(async (result) => {
+                console.log(result)
+                await loginAsAnonymous()
+            })
             .catch(async (error) => {
+                console.log(error)
                 await loginAsAnonymous()
             })
             .finally(() => {
