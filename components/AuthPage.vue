@@ -88,24 +88,9 @@ const onSubmit = handleSubmit(async (values) => {
 async function loginAsAnonymousClicked() {
     if (!loading.value) {
         loading.value = true
-        await loginAsAnonymous()
-            .then((result) => {
-                console.log("login as anonymous")
-            })
+        await registerAnonymous()
             .catch(async (error) => {
-                console.log(error)
-                await registerAnonymous()
-                    .then(async (result) => {
-                        console.log("register as anonymous")
-
-                        await loginAsAnonymous()
-                            .catch((error) => {
-                                console.log(error)
-                            })
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
+                await loginAsAnonymous()
             })
             .finally(() => {
                 loading.value = false
