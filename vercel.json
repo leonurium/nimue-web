@@ -1,6 +1,6 @@
 {
     "version": 2,
-    "routes": [
+    "rewrites": [
         {
             "source": "/(.*)",
             "destination": "/",
@@ -13,7 +13,7 @@
                 "OPTIONS"
             ],
             "headers": {
-                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Origin": "https://virmigo.vercel.app",
                 "Access-Control-Allow-Credentials": "true"
             }
         }
