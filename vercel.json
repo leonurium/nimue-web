@@ -2,19 +2,7 @@
     "rewrites": [
         {
             "source": "/(.*)",
-            "destination": "/",
-            "methods": [
-                "GET",
-                "POST",
-                "PUT",
-                "DELETE",
-                "PATCH",
-                "OPTIONS"
-            ],
-            "headers": {
-                "Access-Control-Allow-Origin": "https://nimue-web.vercel.app",
-                "Access-Control-Allow-Credentials": "true"
-            }
+            "destination": "/"
         }
     ]
 }
