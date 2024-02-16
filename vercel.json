@@ -1,5 +1,4 @@
 {
-    "version": 2,
     "rewrites": [
         {
             "source": "/(.*)",
@@ -13,7 +12,7 @@
                 "OPTIONS"
             ],
             "headers": {
-                "Access-Control-Allow-Origin": "https://virmigo.vercel.app",
+                "Access-Control-Allow-Origin": "https://nimue-web.vercel.app",
                 "Access-Control-Allow-Credentials": "true"
             }
         }
