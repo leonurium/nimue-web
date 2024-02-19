@@ -4,12 +4,18 @@ import type { User } from "~/types/user";
 export default () => {
     const config_public = useRuntimeConfig().public
     const base_url = config_public.base_api_url + config_public.api_version
+    const KEY_REFRESH_TOKEN = 'refresh_token'
     const { getDeviceId } = useDevice();
     const { getPreferences } = usePreferencesService();
 
+    const useAuthRefreshToken = () => localStorage.getItem(KEY_REFRESH_TOKEN)
     const useAuthToken = () => useState('auth_token')
     const useAuthUser = () => useState('auth_user')
     const useAuthLoading = () => useState('auth_loading', (() => true))
+
+    const setRefreshToken = (newToken: string) => {
+        localStorage.setItem(KEY_REFRESH_TOKEN, newToken)
+    }
 
     const setToken = (newToken: string) => {
         const authToken = useAuthToken()
@@ -44,6 +50,7 @@ export default () => {
                 );
                 if (response.success) {
                     const data = response.data as BaseLoginData
+                    setRefreshToken(data.refresh_token)
                     setToken(data.access_token)
                     setUser(data.user)
                     resolve(true)
@@ -73,6 +80,7 @@ export default () => {
                 );
                 if (response.success) {
                     const data = response.data as BaseLoginData
+                    setRefreshToken(data.refresh_token)
                     setToken(data.access_token)
                     setUser(data.user)
                     resolve(true)
@@ -102,7 +110,7 @@ export default () => {
                         credentials: 'include'
                     }
                 );
-                if (response.success) {        
+                if (response.success) {
                     resolve(true)
                 } else {
                     reject(response.message)
@@ -138,9 +146,16 @@ export default () => {
     const refreshToken = () => {
         return new Promise(async (resolve, reject) => {
             try {
+                const refresh_token = useAuthRefreshToken() ?? ""
                 const response = await $fetch<BaseResponse>(
                     `${base_url}/auth/refresh/`,
-                    { method: 'GET', credentials: 'include' }
+                    {
+                        method: 'GET',
+                        credentials: 'include',
+                        headers: {
+                            Authorization: refresh_token
+                        }
+                    }
                 );
                 if (response.success) {
                     const data = response.data as RefreshTokenData

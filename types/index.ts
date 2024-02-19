@@ -22,6 +22,7 @@ export interface BaseResponse {
 }
 
 export interface BaseLoginData {
+    refresh_token: string;
     access_token: string;
     user:         User;
 }
