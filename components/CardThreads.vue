@@ -3,7 +3,7 @@
         <div class="flex w-full">
             <div class="flex items-center space-x-4">
                 <UiAvatar class="h-10 w-10 rounded-full"
-                    :class="isOwnerThread ? 'border border-sky-400' : ''"
+                    :class="isOwnerThread ? 'border-2 border-primary' : ''"
                     :src="props.timeline?.avatar ?? ''"
                     :fallback="getInitials(props.timeline?.name ?? 'Netijen Curhat')" />
                 <div class="space-y-2">

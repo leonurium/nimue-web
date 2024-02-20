@@ -1,29 +1,29 @@
 <template>
-    <div class="h-full text-justify overflow-auto">
-        <h2 class="text-3xl mt-10 mb-3.5">End-User License Agreement (EULA) of Netijen
+    <div class="flex flex-col h-full overflow-auto gap-5 p-6">
+        <h2 class="text-3xl">End-User License Agreement (EULA) of Netijen
             Curhat</h2>
-        <p class="mb-5">This End-User License Agreement ("EULA") is a
+        <p>This End-User License Agreement ("EULA") is a
             legal agreement between you and Netijen Curhat
         </p>
-        <p class="mb-5">This EULA agreement governs your acquisition
+        <p>This EULA agreement governs your acquisition
             and use of our Netijen Curhat software
             ("Software") directly from Netijen Curhat or
             indirectly through a Netijen Curhat authorized
             reseller or distributor (a "Reseller").</p>
-        <p class="mb-5">Please read this EULA agreement carefully
+        <p>Please read this EULA agreement carefully
             before completing the installation process and
             using the Netijen Curhat software. It provides a
             license to use the Netijen Curhat software and
             contains warranty information and liability
             disclaimers.</p>
-        <p class="mb-5">If you register for a free trial of the Netijen
+        <p>If you register for a free trial of the Netijen
             Curhat software, this EULA agreement will also
             govern that trial. By clicking "accept" or
             installing and/or using the Netijen Curhat
             software, you are confirming your acceptance of
             the Software and agreeing to become bound by the
             terms of this EULA agreement.</p>
-        <p class="mb-5">If you are entering into this EULA agreement on
+        <p>If you are entering into this EULA agreement on
             behalf of a company or other legal entity, you
             represent that you have the authority to bind
             such entity and its affiliates to these terms
@@ -32,7 +32,7 @@
             and conditions of this EULA agreement, do not
             install or use the Software, and you must not
             accept this EULA agreement.</p>
-        <p class="mb-5">This EULA agreement shall apply only to the
+        <p>This EULA agreement shall apply only to the
             Software supplied by Netijen Curhat herewith
             regardless of whether other software is referred
             to or described herein. The terms also apply to
@@ -41,41 +41,41 @@
             for the Software, unless other terms accompany
             those items on delivery. If so, those terms
             apply.</p>
-        <h3 class="text-2xl mt-7 mb-2.5">License Grant</h3>
-        <p class="mb-5">Netijen Curhat hereby grants you a personal,
+        <h3 class="text-2xl">License Grant</h3>
+        <p>Netijen Curhat hereby grants you a personal,
             non-transferable, non-exclusive licence to use
             the Netijen Curhat software on your devices in
             accordance with the terms of this EULA
             agreement.</p>
-        <p class="mb-5">You are permitted to load the Netijen Curhat
+        <p>You are permitted to load the Netijen Curhat
             software (for example a PC, laptop, mobile or
             tablet) under your control. You are responsible
             for ensuring your device meets the minimum
             requirements of the Netijen Curhat software.</p>
-        <p class="mb-5">You are not permitted to:</p>
-        <ul class="mb-5">
-            <li class="mb-2.5">Edit, alter, modify, adapt, translate or
+        <p>You are not permitted to:</p>
+        <ul>
+            <li>Edit, alter, modify, adapt, translate or
                 otherwise change the whole or any part of the
                 Software nor permit the whole or any part of
                 the Software to be combined with or become
                 incorporated in any other software, nor
                 decompile, disassemble or reverse engineer the
                 Software or attempt to do any such things</li>
-            <li class="mb-2.5">Reproduce, copy, distribute, resell or
+            <li>Reproduce, copy, distribute, resell or
                 otherwise use the Software for any commercial
                 purpose</li>
-            <li class="mb-2.5">Allow any third party to use the Software on
+            <li>Allow any third party to use the Software on
                 behalf of or for the benefit of any third
                 party</li>
-            <li class="mb-2.5">Use the Software in any way which breaches
+            <li>Use the Software in any way which breaches
                 any applicable local, national or
                 international law</li>
-            <li class="mb-2.5">use the Software for any purpose that
+            <li>use the Software for any purpose that
                 Netijen Curhat considers is a breach of this
                 EULA agreement</li>
         </ul>
-        <h3 class="text-2xl mt-7 mb-2.5">Intellectual Property and Ownership</h3>
-        <p class="mb-5">Netijen Curhat shall at all times retain
+        <h3 class="text-2xl">Intellectual Property and Ownership</h3>
+        <p>Netijen Curhat shall at all times retain
             ownership of the Software as originally
             downloaded by you and all subsequent downloads
             of the Software by you. The Software (and the
@@ -84,15 +84,15 @@
             including any modifications made thereto) are
             and shall remain the property of Netijen Curhat.
         </p>
-        <p class="mb-5">Netijen Curhat reserves the right to grant
+        <p>Netijen Curhat reserves the right to grant
             licences to use the Software to third parties.
         </p>
-        <h3 class="text-2xl mt-7 mb-2.5">Termination</h3>
-        <p class="mb-5">This EULA agreement is effective from the date
+        <h3 class="text-2xl">Termination</h3>
+        <p>This EULA agreement is effective from the date
             you first use the Software and shall continue
             until terminated. You may terminate it at any
             time upon written notice to Netijen Curhat.</p>
-        <p class="mb-5">It will also terminate immediately if you fail
+        <p>It will also terminate immediately if you fail
             to comply with any term of this EULA agreement.
             Upon such termination, the licenses granted by
             this EULA agreement will immediately terminate
@@ -100,8 +100,8 @@
             Software. The provisions that by their nature
             continue and survive will survive any
             termination of this EULA agreement.</p>
-        <h3 class="text-2xl mt-7 mb-2.5">Governing Law</h3>
-        <p class="mb-5">This EULA agreement, and any dispute arising
+        <h3 class="text-2xl">Governing Law</h3>
+        <p>This EULA agreement, and any dispute arising
             out of or in connection with this EULA
             agreement, shall be governed by and construed in
             accordance with the laws of <span class="italic">id</span>.</p>

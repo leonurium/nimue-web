@@ -1,5 +1,5 @@
 import type { BaseResponse } from "~/types";
-import type { Preferences } from "~/types/preferences";
+import type { ImagePreferences, Preferences } from "~/types/preferences";
 
 export default () => {
     const config_public = useRuntimeConfig().public
@@ -47,10 +47,16 @@ export default () => {
         return preferences.report_reasons
     }
 
+    function getImages(): ImagePreferences {
+        const preferences = useAppPreferences().value as Preferences
+        return preferences.images
+    }
+
     return {
         getPreferences,
         getAppName,
         getReplyEmojis,
-        getReportReasons
+        getReportReasons,
+        getImages
     }
 }

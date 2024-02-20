@@ -37,6 +37,7 @@ const props = defineProps({
     }
 })
 
+const { logout } = useAuth()
 const { navRoutes, initRoute } = useNavRoute()
 initRoute()
 const routes = navRoutes().value as NavRoute[]
@@ -50,7 +51,7 @@ function handleNewPost() {
 }
 
 function handleLogout() {
-    clearNuxtState()
+    logout()
 }
 
 </script>

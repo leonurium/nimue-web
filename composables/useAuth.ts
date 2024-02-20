@@ -32,6 +32,14 @@ export default () => {
         authLoading.value = value
     }
 
+    const logout = () => {
+        clearNuxtState()
+        const rToken = useCookie(KEY_REFRESH_TOKEN)
+        rToken.value = null
+        localStorage.clear()
+        window.location.reload()
+    }
+
     const login = (email: string, password: string) => {
         return new Promise(async (resolve, reject) => {
             try {
@@ -175,9 +183,9 @@ export default () => {
         return new Promise(async (resolve, reject) => {
             setIsAuthLoading(true)
             try {
+                await getPreferences()
                 await refreshToken()
                 await getUser()
-                await getPreferences()
                 resolve(true)
             } catch (error) {
                 console.log(error)
@@ -190,9 +198,11 @@ export default () => {
 
     return {
         useAuthLoading,
+        logout,
         login,
         loginAsAnonymous,
         register,
+        refreshToken,
         useAuthUser,
         useAuthToken,
         initAuth
