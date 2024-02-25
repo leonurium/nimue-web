@@ -60,7 +60,7 @@ function hanldeReport(timeline_id: number) {
 }
 
 function handleDelete(timeline_id: number) {
-    deleteTimeline(timeline_id)
+    deleteTimeline(user.user_id, timeline_id)
         .then(() => {
             location.reload()
         })

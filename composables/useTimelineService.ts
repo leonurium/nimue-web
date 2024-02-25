@@ -67,11 +67,11 @@ export default () => {
         })
     }
 
-    const deleteTimeline = async (timeline_id: number) => {
+    const deleteTimeline = async (user_id: string, timeline_id: number) => {
         return new Promise(async (resolve, reject) => {
             try {
                 const response = await useFetchApi(
-                    `${base_url}/timeline/delete/${timeline_id}`,
+                    `${base_url}/timeline/delete/${timeline_id}/${user_id}`,
                     {
                         method: 'DELETE'
                     }
