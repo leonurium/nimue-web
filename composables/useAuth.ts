@@ -33,11 +33,26 @@ export default () => {
     }
 
     const logout = () => {
-        clearNuxtState()
-        const rToken = useCookie(KEY_REFRESH_TOKEN)
-        rToken.value = null
-        localStorage.clear()
-        window.location.reload()
+        return new Promise(async (resolve, reject) => {
+            try {
+                const response = await useFetchApi(
+                    `${base_url}/logout`,
+                    { method: 'GET', credentials: 'include' }
+                )
+                if (response.success) {
+                    clearNuxtState()
+                    const rToken = useCookie(KEY_REFRESH_TOKEN)
+                    rToken.value = null
+                    localStorage.removeItem(KEY_REFRESH_TOKEN)
+                    resolve(true)
+                } else {
+                    reject(response.message)
+                }
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
     }
 
     const login = (email: string, password: string) => {

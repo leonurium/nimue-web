@@ -49,7 +49,7 @@ export default defineNuxtConfig({
     },
 
     cookieControl: {
-
+        isControlButtonEnabled: false
     },
 
     cloudinary: {
@@ -60,7 +60,6 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            app_name: "Netijen Curhat",
             api_version: process.env.API_VERSION,
             base_api_url: process.env.BASE_URL_API,
             base_socket_url: process.env.BASE_URL_SOCKET,

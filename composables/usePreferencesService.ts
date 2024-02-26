@@ -1,5 +1,5 @@
 import type { BaseResponse } from "~/types";
-import type { ImagePreferences, Preferences } from "~/types/preferences";
+import type { ContactPreferences, ImagePreferences, Preferences } from "~/types/preferences";
 
 export default () => {
     const config_public = useRuntimeConfig().public
@@ -34,22 +34,27 @@ export default () => {
 
     function getAppName(): string {
         const preferences = useAppPreferences().value as Preferences
-        return preferences.app_name
+        return preferences.app_name ?? ""
     }
 
     function getReplyEmojis(): string[] {
         const preferences = useAppPreferences().value as Preferences
-        return preferences.reply_emojis
+        return preferences.reply_emojis ?? []
     }
 
-    function getReportReasons(): [string] {
+    function getReportReasons(): string[] {
         const preferences = useAppPreferences().value as Preferences
-        return preferences.report_reasons
+        return preferences.report_reasons ?? []
     }
 
-    function getImages(): ImagePreferences {
+    function getImages(): ImagePreferences | undefined {
         const preferences = useAppPreferences().value as Preferences
         return preferences.images
+    }
+
+    function getContacts(): ContactPreferences | undefined {
+        const preferences = useAppPreferences().value as Preferences
+        return preferences.contacts
     }
 
     return {
@@ -57,6 +62,7 @@ export default () => {
         getAppName,
         getReplyEmojis,
         getReportReasons,
-        getImages
+        getImages,
+        getContacts
     }
 }
