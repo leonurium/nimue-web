@@ -48,10 +48,10 @@
                 }" />
                 <span :class="{
                     'animate-pulse': props.likeIsClicked
-                }">{{ props.timeline?.total_likes }}</span>
+                }">{{ (props.timeline?.total_likes ?? 0) > 0 ? props.timeline?.total_likes : "" }}</span>
             </UiButton>
             <UiButton @click="handleReply(props.timeline?.timeline_id ?? 0)" variant="ghost" class="rounded-full">
-                <IconMessageCircle />{{ props.timeline?.total_comments }}
+                <IconMessageCircle />{{ (props.timeline?.total_comments ?? 0) > 0 ? props.timeline?.total_comments : "" }}
             </UiButton>
             <div class="ml-auto">
                 <ShareDialog

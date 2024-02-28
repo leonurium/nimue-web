@@ -17,7 +17,7 @@
                     <UiDropdownMenu>
                         <UiDropdownMenuTrigger asChild>
                             <UiButton class="h-10 w-10 rounded-full" variant="ghost">
-                                <UiAvatar class="h-10 w-10 rounded-full border-2 border-primary hover:border-none"
+                                <UiAvatar class="h-10 w-10 scale-x-[-1] rounded-full border-2 border-primary hover:border-none"
                                     :src="props.user?.avatar ?? ''"
                                     :fallback="getInitials(props.user?.name ?? 'Netijen Curhat')" />
                             </UiButton>

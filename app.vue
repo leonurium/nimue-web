@@ -89,7 +89,9 @@ onBeforeMount(() => {
                 "login",
                 "register",
                 "user-agreement",
-                "privacy-policy"
+                "privacy-policy",
+                "about",
+                "contact-us"
             ].includes(route.name?.toString() ?? "")) {
                 return await navigateTo("/login")
             }
