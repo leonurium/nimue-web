@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div @contextmenu.prevent="onContextMenu">
         <NuxtLoadingIndicator />
         <div v-if="isAuthLoading">
             <NuxtLayout name="empty">
@@ -50,6 +50,10 @@ const {
 const user = useAuthUser()
 const isAuthLoading = useAuthLoading()
 const route = useRoute()
+
+function onContextMenu() {
+    console.log("Ciluk Ba!")
+}
 
 // example: react to a cookie being accepted
 watch(
