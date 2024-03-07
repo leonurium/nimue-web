@@ -1,5 +1,5 @@
 import type { BaseResponse } from "~/types";
-import type { ContactPreferences, ImagePreferences, Preferences } from "~/types/preferences";
+import type { ContactPreferences, ImagePreferences, Preferences, UrlPreferences } from "~/types/preferences";
 
 export default () => {
     const config_public = useRuntimeConfig().public
@@ -57,12 +57,18 @@ export default () => {
         return preferences.contacts
     }
 
+    function getUrls(): UrlPreferences | undefined {
+        const preferences = useAppPreferences().value as Preferences
+        return preferences.urls
+    } 
+
     return {
         getPreferences,
         getAppName,
         getReplyEmojis,
         getReportReasons,
         getImages,
-        getContacts
+        getContacts,
+        getUrls
     }
 }

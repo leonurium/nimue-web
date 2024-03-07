@@ -57,7 +57,7 @@ initRoute()
 const routes = navRoutes().value as NavRoute[]
 
 const menuitems = [
-    { label: "Account" },
+    { label: props.user?.name },
     { divider: true },
     { title: "Logout", icon: "bi:box-arrow-right", select: handleLogout },
 ];
