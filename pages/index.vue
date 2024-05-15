@@ -21,10 +21,9 @@
 </template>
 
 <script lang="ts" setup>
-import type { Timeline, TimelinesData } from '@/types/timeline'
-import type { User } from '@/types/user'
+import type { Timeline, TimelinesData } from '@/types/Timeline'
+import type { User } from '@/types/User'
 import Observer from "@/components/Observer.vue"
-import usePreferencesService from '~/composables/usePreferencesService'
 
 const { getTimelines } = useTimelineService()
 const { useAuthUser } = useAuth()

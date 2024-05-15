@@ -1,4 +1,4 @@
-import type { Timeline, TimelinesData } from "~/types/timeline";
+import type { Timeline, TimelinesData } from "~/types/Timeline";
 
 export default () => {
     const config_public = useRuntimeConfig().public

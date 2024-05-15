@@ -1,5 +1,5 @@
-import type { CommentsData } from "~/types/comment";
-import type { User } from "~/types/user";
+import type { CommentsData } from "~/types/Comment";
+import type { User } from "~/types/User";
 
 export default () => {
     const config_public = useRuntimeConfig().public

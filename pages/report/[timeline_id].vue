@@ -29,8 +29,8 @@
 <script lang="ts" setup>
 import { z } from "zod";
 import { TypeMessage } from "~/types";
-import type { Timeline } from "~/types/timeline";
-import type { User } from "~/types/user";
+import type { Timeline } from "~/types/Timeline";
+import type { User } from "~/types/User";
 
 const { timeline_id } = useRoute().params
 const { getReportReasons } = usePreferencesService()
@@ -58,7 +58,7 @@ const onSubmit = handleSubmit(async (values) => {
     loadingReport.value = true
     await report(
         user.user_id,
-        timeline.value?.user_id ?? "",
+        timeline.value?.user.user_id ?? "",
         values['reason'],
         String(timeline.value?.timeline_id ?? ""),
         timeline.value?.text_content ?? ""

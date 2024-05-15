@@ -1,120 +1,157 @@
 <template>
-    <NuxtLayout :session="getSessionOtherUser(secondUser)" name="chat">
+    <NuxtLayout :user="convoMethod(conversation).them().at(0)" name="chat">
         <div class="flex flex-col overflow-scroll h-[calc(100svh-56px-56px-76px-12px)]">
             <!-- loading -->
             <LoadingSpinner v-if="loading" class="w-full h-16" />
-            <Observer @intersect="getMessages()" />
-            <div v-for="message in messages" class="grid grid-cols-12 gap-y-2">
+            <Observer @intersect="getChats(conversation?.conversation_id ?? String(chat_id), page, itemPerPage)" />
+            <div v-for="chat in conversation?.chats" class="grid grid-cols-12 gap-y-2">
                 <!-- typing -->
-                <ChatBubble v-if="message.is_typing ?? false" :username="getUserFromSession(message.from)?.name"
-                    :avatar="getUserFromSession(message.from)?.avatar" :timestamp="new Date(message.created_at)"
-                    :is_sender="message.from == user.user_id" :is_typing="message.is_typing" />
+                <ChatBubble v-if="chat.is_typing ?? false" :username="chat.from.name" :avatar="chat.from.avatar"
+                    :timestamp="new Date(chat.created_at)" :is_sender="chat.from.user_id == user.user_id"
+                    :is_typing="chat.is_typing" />
                 <!-- chat bubble from -->
-                <ChatBubble v-else :key="message.message_id" :username="getUserFromSession(message.from)?.name"
-                    :content_message="message.content" :avatar="getUserFromSession(message.from)?.avatar"
-                    :timestamp="new Date(message.created_at)" :is_sender="message.from == user.user_id"
-                    :is_read="message.is_read ?? false" @onRender="handleOnRender(message)" />
+                <ChatBubble v-else :key="chat.chat_id" :username="chat.from.name" :content_message="chat.content"
+                    :avatar="chat.from.avatar" :timestamp="new Date(chat.created_at)"
+                    :is_sender="chat.from.user_id == user.user_id" :is_read="chat.is_read ?? false"
+                    @onRender="handleOnRender(chat)" />
             </div>
         </div>
-        <ReplyForm class="sticky bottom-14 border-t" :user="user" @onSubmit="handleSendMessage" @onKeypress="handleKeypress"
-            @onUpload="handleUpload" withImageUpload />
+        <ReplyForm class="sticky bottom-14 border-t" :user="user" @onSubmit="handleSendMessage"
+            @onKeypress="handleKeypress" @onUpload="handleUpload" withImageUpload />
     </NuxtLayout>
 </template>
 <script lang="ts" setup>
-import type { User } from "~/types/user";
-import {
-    ImageMessage,
-    TextMessage,
-    type ChatMessage,
-    type ChatSession,
-    type ResponseChatMessage
-} from "~/types/chat_message"
+import type { RequestChats, ResponseChats } from "~/types";
+import type { User } from "~/types/User";
+import type { Chat } from "~/types/Chat";
+import type { Conversation } from "~/types/Conversation";
+import { convoMethod } from "~/utils";
+import type { ImageContentChat, TextContentChat } from "~/types/ContentChat";
 
 definePageMeta({
     layout: false
 })
 
 const { chat_id } = useRoute().params
-const { socket, authSocket } = useSocket()
-const { getUserById } = useUserService()
+const socket = useSocket.getInstance()
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
-const secondUser = ref<User>()
-const messages = ref<ChatMessage[]>([])
-const sessions = ref<ChatSession[]>([])
-const page = ref<number>(1)
+const conversation = ref<Conversation>()
+const page = ref<number | null>(1)
 const itemPerPage: number = 10
 const loading = ref<boolean>(true)
 
 const handleSendMessage = (message: string) => {
-    if (secondUser.value) {
-        const content = new TextMessage(message)
-        const data: ChatMessage = {
-            from: user.user_id,
-            to: secondUser.value.user_id,
-            message_id: crypto.randomUUID(),
+    if (!conversation.value) { return }
+    const convo = convoMethod(conversation.value)
+    if (!convo) { return }
+    const otherUser = convo.them().at(0)
+    const content: TextContentChat = {
+        type: 'text',
+        text: message
+    }
+
+    if (otherUser) {
+        const data: Chat = {
+            chat_id: crypto.randomUUID(),
+            conversation_id: conversation.value.conversation_id,
+            from: convo.me() ?? user,
+            to: otherUser,
             content: content,
-            created_at: (new Date()),
-            is_read: false
+            is_read: false,
+            is_typing: false,
+            created_at: new Date().getTime()
         }
 
-        socket().emit('message', data)
+        socket.emit('req_send_chat', data)
     }
 }
 
 const handleUpload = (value: string) => {
-    if (secondUser.value) {
-        const image_url = value
-        const content = new ImageMessage(image_url)
-        const data: ChatMessage = {
-            from: user.user_id,
-            to: secondUser.value.user_id,
-            message_id: crypto.randomUUID(),
+    if (!conversation.value) { return }
+    const convo = convoMethod(conversation.value)
+    if (!convo) { return }
+    const otherUser = convo.them().at(0)
+    const content: ImageContentChat = {
+        type: 'image',
+        url_image: value,
+        meta: {
+            width: 100,
+            height: 100
+        }
+    }
+
+    if (otherUser) {
+        const data: Chat = {
+            chat_id: crypto.randomUUID(),
+            conversation_id: conversation.value.conversation_id,
+            from: convo.me() ?? user,
+            to: otherUser,
             content: content,
-            created_at: (new Date()),
-            is_read: false
+            is_read: false,
+            is_typing: false,
+            created_at: new Date().getTime()
         }
 
-        socket().emit('message', data)
-    }    
+        socket.emit('req_send_chat', data)
+    }
 }
 
 const handleKeypress = () => {
-    if (secondUser.value) {
-        const data: ChatMessage = {
-            from: user.user_id,
-            to: secondUser.value.user_id,
-            message_id: crypto.randomUUID(),
-            created_at: (new Date()),
-            is_typing: true
-        }
-        socket().emit('typing', data)
+    if (!conversation.value) { return }
+    const convo = convoMethod(conversation.value)
+    if (!convo) { return }
+    const content: TextContentChat = {
+        type: "text",
+        text: "typing.."
     }
+
+    const data: Chat = {
+        chat_id: crypto.randomUUID(),
+        conversation_id: conversation.value.conversation_id,
+        from: convo.me() ?? user,
+        to: convo.them().at(0) ?? user,
+        content: content,
+        is_typing: true,
+        created_at: new Date().getTime()
+    }
+    socket.emit('req_typing', data)
 }
 
-const handleOnRender = (data: ChatMessage) => {
-    if (data.is_read != true && data.from != user.user_id) {
+const handleOnRender = (data: Chat) => {
+    if (data.is_read != true && data.from.user_id != user.user_id) {
         console.log("handle on render: ", data)
-        socket().emit('mark-message-read', data)
+        // socket.emit('mark-message-read', data)
     }
 }
 
-socket().on('get-messages', (response: ResponseChatMessage) => {
-    console.log(response)
-    page.value = response.next_page
-    messages.value.unshift(...response.messages)
+socket.on('res_conversation_by_id', (data: Conversation) => {
+    const newChats = data.chats.reverse()
+    data.chats = newChats
+    conversation.value = data
+})
+
+socket.on('res_chats', (data: ResponseChats) => {
+    page.value = data.next_page
+    const newChats = data.chats.reverse()
+    conversation.value?.chats.unshift(...newChats)
     loading.value = false
 })
 
-socket().on('message', (data: ChatMessage) => {
+socket.on('res_send_chat', (data: Chat) => {
+    if (!conversation.value) { return }
     removeTypingFromMessages()
-    messages.value = messages.value.concat(data)
-    console.log(messages.value)
+    conversation.value.chats = conversation.value.chats.concat(data)
+    console.log(conversation.value.chats)
 })
 
-socket().on('typing', (data: ChatMessage) => {
-    if (!typingIsExist() && data.from === secondUser.value?.user_id) {
-        messages.value = messages.value.concat(data)
+socket.on('res_typing', (data: Chat) => {
+    if (!conversation.value) { return }
+    const otherUser = convoMethod(conversation.value).them().at(0)
+    if (!otherUser) { return }
+
+    if (!typingIsExist() && data.from.user_id === otherUser.user_id) {
+        conversation.value.chats = conversation.value.chats.concat(data)
 
         //clear after 3 sec
         setTimeout(() => {
@@ -123,137 +160,84 @@ socket().on('typing', (data: ChatMessage) => {
     }
 })
 
-socket().on('mark-message-read', (data: ChatMessage) => {
-    console.log('mark-message-read', data)
-    if (user.user_id == data.from) {
-        for (let index = 0; index < messages.value.length; index++) {
-            if (messages.value[index].message_id === data.message_id) {
-                messages.value[index].is_read = true
-                console.log("update as read is achieve yeay!")
-            }
-        }
-    }
-})
+// socket().on('mark-message-read', (data: ChatMessage) => {
+//     console.log('mark-message-read', data)
+//     if (user.user_id == data.from) {
+//         for (let index = 0; index < messages.value.length; index++) {
+//             if (messages.value[index].message_id === data.message_id) {
+//                 messages.value[index].is_read = true
+//                 console.log("update as read is achieve yeay!")
+//             }
+//         }
+//     }
+// })
 
-socket().on('user-connected', (data: ChatSession) => {
-    // update user in online / connected
-    updateStatusUser(data, "user-online: ")
-})
+// socket().on('user-connected', (data: ChatSession) => {
+//     // update user in online / connected
+//     updateStatusUser(data, "user-online: ")
+// })
 
-socket().on('user-disconnected', (data: ChatSession) => {
-    // update user is offline / disconnected
-    updateStatusUser(data, "user-offline: ")
-})
+// socket().on('user-disconnected', (data: ChatSession) => {
+//     // update user is offline / disconnected
+//     updateStatusUser(data, "user-offline: ")
+// })
 
 function typingIsExist(): boolean {
-    const chats = messages.value.filter((message) => {
-        const is_typing = message.is_typing ?? false
+    const messages = conversation.value?.chats.filter((chat) => {
+        const is_typing = chat.is_typing ?? false
         if (is_typing) {
-            return message
+            return chat
         }
     })
-    return chats.length > 0
+    return (messages?.length ?? 0) > 0
 }
 
 function removeTypingFromMessages() {
-    const newMessages = messages.value.filter((message) => {
-        const is_typing = message.is_typing ?? false
-        if (!is_typing) {
-            return message
-        }
-    })
-    messages.value = newMessages
-}
-
-function getUserFromSession(user_id: string): User | undefined {
-    const session = sessions.value.find((session) => session.user_id === user_id)
-    return session?.user || undefined
-}
-
-function updateStatusUser(data: ChatSession, status: string) {
-    for (let index = 0; index < sessions.value.length; index++) {
-        if (sessions.value[index].user_id == data.user_id) {
-            sessions.value[index].connected = data.connected
-            console.log(`${status}`, data.user_id)
-        }
-    }
-}
-
-function getSessionOtherUser(user?: User): ChatSession | undefined {
-    return sessions.value.find(session => session.user_id === user?.user_id)
-}
-
-function getMessages(user_id?: string, pageNumber?: number, itemPerPageNumber?: number) {
-    if (!loading.value) {
-        loading.value = true
-        const data = {
-            user_id: user_id ?? secondUser.value?.user_id,
-            page: pageNumber ?? page.value,
-            item_per_page: itemPerPageNumber ?? itemPerPage
-        }
-        socket().emit('request-messages', data)
-        console.log('request messages')
-    }
-}
-
-function handleSocketDisconnect(): void {
-    if (socket()) {
-        socket().off('get-messages')
-        socket().off('message')
-        socket().off('typing')
-        socket().off('mark-message-read')
-        socket().off('user-joined')
-        socket().off('user-disconnected')
-        socket().offAny()
-        socket().disconnect()
-        console.log('cleanup')
-    }
-}
-
-onBeforeRouteLeave(() => {
-    console.log('onBeforeRouteLeave')
-    handleSocketDisconnect()
-})
-
-onBeforeUnmount(() => {
-    console.log('onBeforeUnmount')
-    handleSocketDisconnect()
-})
-
-onMounted(() => {
-    if (!socket().connected) {
-        console.log('try to connecting')
-        authSocket()
-    }
-})
-
-
-onBeforeMount(async () => {
-    const user_id = String(chat_id)
-    await getUserById(user_id)
-        .then((result) => {
-            const data = result as User
-            secondUser.value = data
-        })
-        .catch((error) => {
-            console.log(error)
-        })
-        .finally(() => {
-            if (secondUser.value) {
-                sessions.value = []
-                sessions.value.push({
-                    user_id: user.user_id,
-                    user: user,
-                    connected: false
-                }, {
-                    user_id: secondUser.value.user_id,
-                    user: secondUser.value,
-                    connected: false
-                })
-                loading.value = false
-                getMessages(secondUser.value.user_id)
+    if (conversation.value) {
+        const newChats = conversation.value.chats.filter((chat) => {
+            const is_typing = chat.is_typing ?? false
+            if (!is_typing) {
+                return chat
             }
         })
+        conversation.value.chats = newChats
+    }
+}
+
+// function updateStatusUser(data: ChatSession, status: string) {
+//     for (let index = 0; index < sessions.value.length; index++) {
+//         if (sessions.value[index].user_id == data.user_id) {
+//             sessions.value[index].connected = data.connected
+//             console.log(`${status}`, data.user_id)
+//         }
+//     }
+// }
+
+function getChats(conversation_id: string, page: number | null, itemPerPage: number) {
+    if (!loading.value && page != null) {
+        loading.value = true
+        const request: RequestChats = {
+            conversation_id: conversation_id,
+            page: page,
+            item_per_page: itemPerPage
+        }
+        socket.emit('req_chats', request)
+    }
+}
+
+function getConversation(conversation_id: string) {
+    socket.emit('req_conversation_by_id', conversation_id)
+}
+
+onMounted(() => {
+    if (!socket.connected) {
+        console.log('try to connecting')
+        socket.establishConnection()
+    }
+
+    const convo_id = String(chat_id)
+    loading.value = false
+    getConversation(convo_id)
 })
 
 </script>

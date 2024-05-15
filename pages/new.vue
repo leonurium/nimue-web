@@ -25,7 +25,7 @@
 <script lang="ts" setup>
 import { z } from "zod";
 import { TypeMessage } from "~/types";
-import type { User } from "~/types/user";
+import type { User } from "~/types/User";
 
 const { newTimeline } = useTimelineService()
 const { showMessage } = useMessage()
@@ -61,4 +61,4 @@ const onSubmit = handleSubmit( async (values) => {
             loading.value = false
         })
 });
-</script>
+</script>~/types/User

@@ -2,17 +2,11 @@
     <div class="flex flex-col gap-10">
         <UiCard class="shadow-lg rounded-lg" v-for="timeline in props.timelines" :key="timeline.timeline_id">
             <div class="flex flex-col gap-5 p-6" v-if="!timeline.is_ads">
-                <CardThreads
-                    :timeline="timeline"
+                <CardThreads :timeline="timeline"
                     :likeIsClicked="likeStates[timeline.timeline_id]?.likeClicked ?? false"
-                    :isOwnerThread="timeline.user_id == user.user_id"
-                    @onClickLike="handleLike"
-                    @onClickReply="handleReply"
-                    @onClickShare="handleShare"
-                    @onClickSendChat="handleSendChat"
-                    @onClickReport="hanldeReport"
-                    @onClickDelete="handleDelete"
-                />
+                    :isOwnerThread="timeline.user.user_id == user.user_id" @onClickLike="handleLike"
+                    @onClickReply="handleReply" @onClickShare="handleShare" @onClickSendChat="handleSendChat"
+                    @onClickReport="hanldeReport" @onClickDelete="handleDelete" />
             </div>
 
             <div v-else>
@@ -23,8 +17,9 @@
 </template>
 
 <script lang="ts" setup>
-import type { User } from '~/types/user';
-import type { Timeline } from '@/types/timeline';
+import type { User } from '~/types/User';
+import type { Timeline } from '@/types/Timeline';
+import type { Conversation } from '~/types/Conversation';
 
 const props = defineProps({
     timelines: {
@@ -42,6 +37,7 @@ const {
 } = useTimelineService()
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
+const socket = useSocket.getInstance()
 const likeStates = reactive<{ [key: number]: { likeClicked: boolean } }>({});
 
 const getTimelineById = (timeline_id: number) => {
@@ -49,10 +45,28 @@ const getTimelineById = (timeline_id: number) => {
     return item.at(0)
 }
 
+function createConversation(from: User, to: User) {
+    const conversation: Conversation = {
+        conversation_id: `${from.user_id}.${to.user_id}`,
+        users: [from, to],
+        chats: [],
+        last_chat: undefined,
+        last_chat_timestamp: new Date().getTime()
+    }
+    socket.emit('req_create_conversation', conversation)
+}
+
+socket.on('res_create_conversation', (data: Conversation) => {
+    console.log(data.conversation_id)
+    navigateTo(`/chats/${data.conversation_id}`)
+})
+
 function handleSendChat(timeline_id: number) {
     const timeline = getTimelineById(timeline_id)
-    const userId = timeline?.user_id ?? 1
-    navigateTo(`/chats/${userId}`)
+    const userTo = timeline?.user ?? user
+    if (userTo) {
+        createConversation(user, userTo)
+    }
 }
 
 function hanldeReport(timeline_id: number) {

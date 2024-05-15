@@ -28,9 +28,9 @@
 </template>
 
 <script lang="ts" setup>
-import type { User } from '~/types/user';
-import type { Timeline } from '@/types/timeline';
-import type { CommentsData, Comment } from '~/types/comment';
+import type { User } from '~/types/User';
+import type { Timeline } from '@/types/Timeline';
+import type { CommentsData, Comment } from '~/types/Comment';
 
 const { getTimelineById } = useTimelineService()
 const { getCommentByTimelineId } = useCommentService()
@@ -94,11 +94,11 @@ onBeforeMount(() => {
 
 useSeoMeta({
     description: timeline.value?.text_content,
-    ogTitle: `${timeline.value?.name} - ${getAppName()}`,
+    ogTitle: `${timeline.value?.user.name} - ${getAppName()}`,
     ogDescription: timeline.value?.text_content,
     ogImage: '[og:image]',
     ogUrl: window.location.href,
-    twitterTitle: `${timeline.value?.name} - ${getAppName()}`,
+    twitterTitle: `${timeline.value?.user.name} - ${getAppName()}`,
     twitterDescription: timeline.value?.text_content,
     twitterImage: '[twitter:image]',
     twitterCard: 'summary'

@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts" setup>
-import type { Comment } from '~/types/comment';
+import type { Comment } from '~/types/Comment';
 const props = defineProps({
     commentData: {
         type: Object as () => Comment,

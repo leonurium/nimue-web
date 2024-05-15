@@ -1,3 +1,5 @@
+import type { User } from "./User";
+
 export interface TimelinesData {
     page:      number;
     next_page: number;
@@ -6,12 +8,8 @@ export interface TimelinesData {
 
 export interface Timeline {
     timeline_id:    number;
-    user_id:        string;
-    device_id:      string;
-    name:           string;
+    user:           User;
     text_content:   string;
-    avatar:         string;
-    timed:          string;
     created_at:     string;
     updated_at:     string;
     total_likes:    number;

@@ -7,7 +7,7 @@ export interface Preferences {
     url_update_version_ios?:     string;
     url_update_version_android?: string;
     reply_emojis?:               string[];
-    report_reasons?:             string[];
+    report_reasons?:             [string];
     images?:                     ImagePreferences;
     urls?:                       UrlPreferences;
     contacts?:                   ContactPreferences;

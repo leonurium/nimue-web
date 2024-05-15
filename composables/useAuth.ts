@@ -1,5 +1,5 @@
 import type { BaseResponse, BaseLoginData, RefreshTokenData } from "~/types";
-import type { User } from "~/types/user";
+import type { User } from "~/types/User";
 
 export default () => {
     const config_public = useRuntimeConfig().public

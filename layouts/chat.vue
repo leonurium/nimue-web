@@ -10,9 +10,9 @@
                     <IconChevronLeft/>
                 </UiButton>
                 <div class="flex flex-row items-center">
-                    <p class="text-base font-semibold pr-3">{{ session?.user?.name }}</p>
-                    <ChatStatusIcon :isOnline="session?.connected" />
-                    <span v-if="session?.connected" class="text-secondary-foreground/70 text-[10px] pl-1">online</span>
+                    <p class="text-base font-semibold pr-3">{{ user?.name }}</p>
+                    <ChatStatusIcon :isOnline="user?.is_online" />
+                    <span v-if="user?.is_online" class="text-secondary-foreground/70 text-[10px] pl-1">online</span>
                     <span v-else class="text-secondary-foreground/70 text-[10px] pl-1">offline</span>
                 </div>
                 <div class="flex items-center gap-2">
@@ -30,11 +30,11 @@
 </template>
   
 <script lang="ts" setup>
-import type { ChatSession } from '~/types/chat_message';
+import type { User } from '~/types/User';
 
 const props = defineProps({
-    session: {
-        type: Object as () => ChatSession,
+    user: {
+        type: Object as () => User,
         default: undefined,
         required: false
     }

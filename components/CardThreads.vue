@@ -4,11 +4,11 @@
             <div class="flex items-center space-x-4">
                 <UiAvatar class="h-10 w-10 rounded-full"
                     :class="isOwnerThread ? 'border-2 border-primary' : ''"
-                    :src="props.timeline?.avatar ?? ''"
-                    :fallback="getInitials(props.timeline?.name ?? 'Netijen Curhat')" />
+                    :src="props.timeline?.user.avatar ?? ''"
+                    :fallback="getInitials(props.timeline?.user.name ?? 'Netijen Curhat')" />
                 <div class="space-y-2">
-                    <h1 class="h-4 text-base font-bold"> {{ props.timeline?.name }} </h1>
-                    <h5 class="h-4 text-xs"> {{ getTimeAgo(props.timeline?.timed ?? "") }} </h5>
+                    <h1 class="h-4 text-base font-bold"> {{ props.timeline?.user.name }} </h1>
+                    <h5 class="h-4 text-xs"> {{ getTimeAgo(props.timeline?.created_at ?? "") }} </h5>
                 </div>
             </div>
             <div class="ml-auto">
@@ -66,7 +66,7 @@
 </template>
 
 <script lang="ts" setup>
-import { type Timeline } from '@/types/timeline';
+import { type Timeline } from '@/types/Timeline';
 const props = defineProps({
     timeline: {
         type: Object as () => Timeline,

@@ -1,3 +1,6 @@
+import type { Conversation } from "~/types/Conversation";
+import type { User } from "~/types/User";
+
 export function getInitials(name: string): string {
     if (name.length > 0) {
         const words = name.split(' ');
@@ -57,4 +60,32 @@ export function generateRandomString(length: number): string {
     }
 
     return result;
+}
+
+export function convoMethod(conversation: Conversation | null | undefined) {
+    return {
+        ...conversation,
+        me(): User | undefined {
+            const { useAuthUser } = useAuth()
+            const user = useAuthUser().value as User
+            return conversation?.users.find(u => u.user_id === user.user_id);
+        },
+        them(): User[] {
+            const { useAuthUser } = useAuth()
+            const user = useAuthUser().value as User
+            return conversation?.users.filter(u => u.user_id !== user.user_id) ?? [];
+        },
+        isBlocked(): boolean {
+            return !!conversation?.blocked_by;
+        },
+        isBlockedByMe(): boolean {
+            const { useAuthUser } = useAuth()
+            const user = useAuthUser().value as User
+
+            if (!conversation?.blocked_by) {
+                return false;
+            }
+            return conversation.blocked_by === user.user_id;
+        }
+    };
 }

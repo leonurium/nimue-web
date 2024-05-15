@@ -44,9 +44,9 @@
 </template>
 
 <script lang="ts" setup>
-import type { User } from '~/types/user';
+import type { User } from '~/types/User';
 import usePreferencesService from '~/composables/usePreferencesService';
-import type { CloudinaryUploadResponse } from '~/types/cloudinary';
+import type { CloudinaryUploadResponse } from '~/types/Cloudinary';
 
 const { getReplyEmojis } = usePreferencesService()
 const emojis: string[] = getReplyEmojis()

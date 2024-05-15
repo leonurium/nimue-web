@@ -38,7 +38,6 @@
 
 <script lang="ts" setup>
 const { useAuthUser, initAuth, useAuthLoading } = useAuth()
-const { authSocket, socket } = useSocket()
 const {
     cookiesEnabled,
     cookiesEnabledIds,
@@ -50,6 +49,7 @@ const {
 const user = useAuthUser()
 const isAuthLoading = useAuthLoading()
 const route = useRoute()
+const socket = useSocket.getInstance()
 
 function onContextMenu() {
     console.log("Ciluk Ba!")
@@ -84,8 +84,11 @@ watch(user, async (current, previous) => {
 onBeforeMount(() => {
     initAuth()
         .then((result) => {
-            if (result && !socket().connected) {
-                authSocket()
+            if (result) {
+                 // init socket
+                const socketURL = useRuntimeConfig().public.base_socket_url
+                socket.set(socketURL)
+                socket.establishConnection()
             }
         })
         .catch(async (error) => {

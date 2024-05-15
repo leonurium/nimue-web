@@ -39,7 +39,7 @@
 </template>
   
 <script lang="ts" setup>
-import type { User } from '~/types/user';
+import type { User } from '~/types/User';
 const { getAppName } = usePreferencesService()
 const appName = getAppName()
 
