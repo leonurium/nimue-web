@@ -45,7 +45,7 @@ const obrolans = ["abc", "def"]
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
 const page = ref<number | null>(1)
-const itemPerPage: number = 10
+const itemPerPage: number = 15
 
 const getLastMessageInfo = (conversation: Conversation): { lastChatTime: string } => {
     const defaultResult = {

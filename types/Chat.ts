@@ -10,4 +10,7 @@ export interface Chat {
     is_typing?: boolean;
     is_read?: boolean;
     created_at: number;
+
+    //FE Only
+    is_new_chat?: boolean
 }

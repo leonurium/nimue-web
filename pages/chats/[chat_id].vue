@@ -8,11 +8,11 @@
                 <!-- typing -->
                 <ChatBubble v-if="chat.is_typing ?? false" :username="chat.from.name" :avatar="chat.from.avatar"
                     :timestamp="new Date(chat.created_at)" :is_sender="chat.from.user_id == user.user_id"
-                    :is_typing="chat.is_typing" />
+                    :is_typing="chat.is_typing" :is_new_chat="true" />
                 <!-- chat bubble from -->
                 <ChatBubble v-else :key="chat.chat_id" :username="chat.from.name" :content_message="chat.content"
                     :avatar="chat.from.avatar" :timestamp="new Date(chat.created_at)"
-                    :is_sender="chat.from.user_id == user.user_id" :is_read="chat.is_read ?? false"
+                    :is_sender="chat.from.user_id == user.user_id" :is_read="chat.is_read ?? false" :is_new_chat="chat.is_new_chat ?? false"
                     @onRender="handleOnRender(chat)" />
             </div>
         </div>
@@ -38,7 +38,7 @@ const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
 const conversation = ref<Conversation>()
 const page = ref<number | null>(1)
-const itemPerPage: number = 10
+const itemPerPage: number = 15
 const loading = ref<boolean>(true)
 
 const handleSendMessage = (message: string) => {
@@ -141,6 +141,7 @@ socket.on('res_chats', (data: ResponseChats) => {
 socket.on('res_send_chat', (data: Chat) => {
     if (!conversation.value) { return }
     removeTypingFromMessages()
+    data.is_new_chat = true
     conversation.value.chats = conversation.value.chats.concat(data)
     console.log(conversation.value.chats)
 })
@@ -214,11 +215,14 @@ function removeTypingFromMessages() {
 // }
 
 function getChats(conversation_id: string, page: number | null, itemPerPage: number) {
-    if (!loading.value && page != null) {
+    loading.value = false
+    if (!loading.value && page != null && conversation.value) {
+        const shouldNumPage = page === 1 && (conversation.value?.chats.length ?? 0) > 0 ? 2 : page
+        console.log(shouldNumPage)
         loading.value = true
         const request: RequestChats = {
             conversation_id: conversation_id,
-            page: page,
+            page: shouldNumPage,
             item_per_page: itemPerPage
         }
         socket.emit('req_chats', request)
@@ -236,7 +240,6 @@ onMounted(() => {
     }
 
     const convo_id = String(chat_id)
-    loading.value = false
     getConversation(convo_id)
 })
 
