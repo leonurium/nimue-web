@@ -96,6 +96,8 @@ class useSocket {
 }
 
 type SocketEvent =
+    'res_user_online' |
+    'res_user_offline' |
     'req_create_conversation' |
     'res_create_conversation' |
     'req_conversation_by_id' |

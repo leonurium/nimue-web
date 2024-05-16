@@ -1,6 +1,6 @@
 <template>
     <UiContainer class="max-w-2xl p-6">
-        <div v-for="conversation in conversations" class="flex flex-col">
+        <div v-if="(conversations?.length ?? 0) > 0" v-for="conversation in conversations" class="flex flex-col">
             <div @click="handleClickConversation(conversation.conversation_id)"
                 class="flex flex-row items-center gap-4">
                 <UiAvatar class="h-10 w-10" :src="convoMethod(conversation).them().at(0)?.avatar"
@@ -31,6 +31,11 @@
             </div>
             <UiDivider class="pt-4 pb-4" />
         </div>
+
+        <div v-else class="flex flex-col items-center justify-center gap-8">
+            <p class="mt-auto">No Chat Today, Let's Chat!</p>
+            <UiAvatar class="h-48 w-48" :src="user.avatar" :fallback="getInitials(user.name)" />
+        </div>
     </UiContainer>
 </template>
 <script lang="ts" setup>
@@ -39,9 +44,7 @@ import { TypeMessage, type RequestConversations, type ResponseConversations } fr
 import type { Conversation } from "~/types/Conversation";
 
 const socket = useSocket.getInstance()
-const { getMultipleUsers } = useUserService()
 const conversations = ref<Conversation[]>()
-const obrolans = ["abc", "def"]
 const { useAuthUser } = useAuth()
 const user = useAuthUser().value as User
 const page = ref<number | null>(1)
@@ -87,6 +90,28 @@ const getLastMessageInfo = (conversation: Conversation): { lastChatTime: string 
 //     }
 //     return defaultResult
 // }
+
+socket.on('res_user_online', (data: User) => {
+    conversations.value?.forEach(conversation => {
+        for (let index = 0; index < (conversation.users.length ?? 0); index++) {
+            if (conversation.users[index].user_id === data.user_id) {
+                conversation.users[index].is_online = data.is_online
+                break
+            }
+        }
+    });
+})
+
+socket.on('res_user_offline', (data: User) => {
+    conversations.value?.forEach(conversation => {
+        for (let index = 0; index < (conversation.users.length ?? 0); index++) {
+            if (conversation.users[index].user_id === data.user_id) {
+                conversation.users[index].is_online = data.is_online
+                break
+            }
+        }
+    });
+})
 
 socket.on('res_conversations', (data: ResponseConversations) => {
     page.value = data.next_page

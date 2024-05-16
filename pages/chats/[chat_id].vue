@@ -125,6 +125,26 @@ const handleOnRender = (data: Chat) => {
     }
 }
 
+socket.on('res_user_online', (data: User) => {
+    if (convoMethod(conversation.value).them().at(0)?.user_id === data.user_id) {
+        for (let index = 0; index < (conversation.value?.users.length ?? 0); index++) {
+            if (conversation.value?.users[index].user_id === data.user_id) {
+                conversation.value.users[index].is_online = data.is_online
+            }
+        }
+    }
+})
+
+socket.on('res_user_offline', (data: User) => {
+    if (convoMethod(conversation.value).them().at(0)?.user_id === data.user_id) {
+        for (let index = 0; index < (conversation.value?.users.length ?? 0); index++) {
+            if (conversation.value?.users[index].user_id === data.user_id) {
+                conversation.value.users[index].is_online = data.is_online
+            }
+        }
+    }
+})
+
 socket.on('res_conversation_by_id', (data: Conversation) => {
     const newChats = data.chats.reverse()
     data.chats = newChats
