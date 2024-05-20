@@ -121,7 +121,7 @@ const handleKeypress = () => {
 const handleOnRender = (data: Chat) => {
     if (data.is_read != true && data.from.user_id != user.user_id) {
         console.log("handle on render: ", data)
-        // socket.emit('mark-message-read', data)
+        socket.emit('req_mark_chat_read', [data])
     }
 }
 
@@ -178,6 +178,17 @@ socket.on('res_typing', (data: Chat) => {
         setTimeout(() => {
             removeTypingFromMessages()
         }, 3000);
+    }
+})
+
+socket.on('res_mark_chat_read', (data: Chat[]) => {
+    for (let i = 0; i < data.length; i++) {
+        for (let j = 0; j < (conversation.value?.chats.length ?? 0); j++) {
+            if (conversation.value?.chats[j].chat_id === data[i].chat_id) {
+                conversation.value.chats[j].is_read = data[i].is_read
+                break
+            }
+        }
     }
 })
 

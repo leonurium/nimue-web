@@ -109,6 +109,8 @@ type SocketEvent =
     'req_send_chat' |
     'res_send_chat' |
     'req_typing' |
-    'res_typing'
+    'res_typing' |
+    'req_mark_chat_read' |
+    'res_mark_chat_read'
 
 export default useSocket;
