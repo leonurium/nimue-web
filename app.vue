@@ -50,6 +50,7 @@ const {
 const user = useAuthUser()
 const isAuthLoading = useAuthLoading()
 const route = useRoute()
+const { getUrls } = usePreferencesService()
 const socket = useSocket.getInstance()
 
 function onContextMenu() {
@@ -78,7 +79,8 @@ watch(user, async (current, previous) => {
             "register"
         ].includes(route.name?.toString() ?? "")) {
             // init socket
-            const socketURL = useRuntimeConfig().public.base_socket_url
+            // const socketURL = useRuntimeConfig().public.base_socket_url
+            const socketURL = getUrls()?.socket_server ?? useRuntimeConfig().public.base_socket_url
             socket.set(socketURL)
             socket.establishConnection()
 
@@ -92,7 +94,8 @@ onBeforeMount(() => {
         .then((result) => {
             if (result) {
                 // init socket
-                const socketURL = useRuntimeConfig().public.base_socket_url
+                // const socketURL = useRuntimeConfig().public.base_socket_url
+                const socketURL = getUrls()?.socket_server ?? useRuntimeConfig().public.base_socket_url
                 socket.set(socketURL)
                 socket.establishConnection()
             }
