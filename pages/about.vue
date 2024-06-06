@@ -64,9 +64,6 @@
                 for expression and support.
             </p>
             <p>Thank you for being a part of this journey.</p>
-            <div class="flex items-center justify-center p-8">
-                <FooterLinks />
-            </div>
         </section>
     </div>
 </template>
