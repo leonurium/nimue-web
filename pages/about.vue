@@ -72,7 +72,6 @@
 </template>
 
 <script lang="ts">
-import type NimueLogo from '~/components/NimueLogo.vue';
 
 </script>
 
