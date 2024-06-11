@@ -63,7 +63,7 @@
                 in need of a safe space to share their hearts. Together, we can make Netijen Curhat a lasting sanctuary
                 for expression and support.
             </p>
-            <p>Thank you for being a part of this journey.</p>
+            <p>Thank you for being a part of this journey!</p>
         </section>
     </div>
 </template>
