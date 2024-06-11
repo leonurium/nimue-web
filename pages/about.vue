@@ -22,7 +22,7 @@
             </p>
             <p>
                 Currently, the author is on a career break, focusing on personal growth and spending quality time with
-                family. During this period, they have also been dedicating time to business endeavors and freelancing
+                family. During this period, the author have also been dedicating time to business endeavors and freelancing
                 opportunities, all while nurturing and expanding Netijen Curhat.
             </p>
         </section>
