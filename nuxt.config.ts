@@ -7,9 +7,11 @@ export default defineNuxtConfig({
         "@vueuse/nuxt",
         "nuxt-icon",
         "nuxt-lucide-icons",
+        "nuxt-vuefire",
         "@vee-validate/nuxt",
         "@nuxtjs/cloudinary",
-        "@dargmuesli/nuxt-cookie-control"
+        "@dargmuesli/nuxt-cookie-control",
+        "@vite-pwa/nuxt"
     ],
 
     tailwindcss: {
@@ -58,11 +60,33 @@ export default defineNuxtConfig({
         uploadPreset: process.env.CLOUDINARY_PRESET_UPLOAD
     },
 
+    vuefire: {
+        config: {
+            apiKey: process.env.FIREBASE_API_KEY,
+            authDomain: process.env.FIREBASE_AUTH_DOAMIN,
+            databaseURL: process.env.FIREBASE_DATABASE_URL,
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+            messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+            appId: process.env.FIREBASE_APP_ID,
+            measurementId: process.env.FIREBASE_MEASUREMENT_ID
+        }
+    },
+
+    pwa: {
+        workbox: {
+            importScripts: [
+                '/firebase-messaging-sw.js'
+            ]
+        }
+    },
+
     runtimeConfig: {
         public: {
             api_version: process.env.API_VERSION,
             base_api_url: process.env.BASE_URL_API,
             base_socket_url: process.env.BASE_URL_SOCKET,
+            firebase_vapid_key: process.env.FIREBASE_VAPID_KEY,
             cloudinary: {
                 uploadPreset: process.env.CLOUDINARY_PRESET_UPLOAD
             }

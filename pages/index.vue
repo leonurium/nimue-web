@@ -6,7 +6,7 @@
         <div v-else>
             <div v-if="timelines.length > 0">
                 <ListThreads :timelines="timelines"></ListThreads>
-                <Observer @intersect="loadMore"/>
+                <Observer @intersect="loadMore" />
             </div>
             <div v-else class="flex flex-col gap-2 items-center">
                 <IconGanttChartSquare />
@@ -34,6 +34,24 @@ const loading = ref(true);
 const loadingMore = ref(false);
 const responseMessage = ref("Mau curhat apa?");
 const timelines = ref<Timeline[]>([]);
+
+import { getToken, getMessaging, onMessage } from "firebase/messaging"
+
+const firebaseApp = useFirebaseApp()
+const messaging = getMessaging()
+
+try {
+    await Notification.requestPermission()
+    const token = await getToken(messaging, { vapidKey: useRuntimeConfig().public.firebase_vapid_key })
+    console.log("token", token)
+} catch (error) {
+    console.log(error)
+}
+
+onMessage(messaging, (payload) => {
+    console.log('Message received. ', payload);
+    // Customize notification here
+});
 
 async function getListTimeline() {
     try {
