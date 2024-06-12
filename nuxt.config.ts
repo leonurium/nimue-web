@@ -74,10 +74,47 @@ export default defineNuxtConfig({
     },
 
     pwa: {
+        manifest: {
+            name: 'Netijen Curhat',
+            short_name: 'Netijen Curhat',
+            description: 'Social Network Anonymously',
+            icons: [
+                {
+                    src: "pwa-64x64.png",
+                    sizes: "64x64",
+                    type: "image/png"
+                },
+                {
+                    src: "pwa-192x192.png",
+                    sizes: "192x192",
+                    type: "image/png"
+                },
+                {
+                    src: "pwa-512x512.png",
+                    sizes: "512x512",
+                    type: "image/png"
+                },
+                // {
+                //     src: "maskable-icon-512x512.png",
+                //     sizes: "512x512",
+                //     type: "image/png"
+                // },
+                // {
+                //     src: "apple-touch-icon-180x180",
+                //     sizes: "180x180",
+                //     type: "image/png"
+                // }
+            ]
+        },
         workbox: {
+            navigateFallback: '/',
             importScripts: [
                 '/firebase-messaging-sw.js'
             ]
+        },
+        devOptions: {
+            enabled: true,
+            type: 'module'
         }
     },
 

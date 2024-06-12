@@ -31,7 +31,7 @@ messaging.onBackgroundMessage(function (payload) {
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
-        icon: __dirname + '/favicon.ico'
+        icon: '/favicon.ico'
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);

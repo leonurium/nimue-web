@@ -1,5 +1,6 @@
 <template>
     <div @contextmenu.prevent="onContextMenu">
+        <VitePwaManifest />
         <NuxtLoadingIndicator />
         <div v-if="isAuthLoading">
             <NuxtLayout name="empty">

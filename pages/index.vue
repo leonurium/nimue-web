@@ -37,15 +37,21 @@ const timelines = ref<Timeline[]>([]);
 
 import { getToken, getMessaging, onMessage } from "firebase/messaging"
 
-const firebaseApp = useFirebaseApp()
+const fb = useFirebaseApp()
 const messaging = getMessaging()
 
-try {
-    await Notification.requestPermission()
-    const token = await getToken(messaging, { vapidKey: useRuntimeConfig().public.firebase_vapid_key })
-    console.log("token", token)
-} catch (error) {
-    console.log(error)
+async function setupFcm() {
+    try {
+        const permission = await Notification.requestPermission()
+        if (permission === 'granted') {
+            const token = await getToken(messaging, {
+                vapidKey: useRuntimeConfig().public.firebase_vapid_key
+            })
+            console.log("token", token)
+        }
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 onMessage(messaging, (payload) => {
@@ -80,6 +86,10 @@ const loadMore = async () => {
         await getListTimeline()
     }
 };
+
+onMounted(async () => {
+    setupFcm()
+})
 
 onBeforeMount(async () => {
     loading.value = true
