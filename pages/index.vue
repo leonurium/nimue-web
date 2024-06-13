@@ -21,12 +21,13 @@
 </template>
 
 <script lang="ts" setup>
+import { getToken, getMessaging, onMessage } from "firebase/messaging"
 import type { Timeline, TimelinesData } from '@/types/Timeline'
 import type { User } from '@/types/User'
 import Observer from "@/components/Observer.vue"
 
 const { getTimelines } = useTimelineService()
-const { useAuthUser } = useAuth()
+const { useAuthUser, saveFcmToken } = useAuth()
 const user = useAuthUser().value as User
 const itemPerPage = ref(10);
 const page = ref(1);
@@ -35,22 +36,24 @@ const loadingMore = ref(false);
 const responseMessage = ref("Mau curhat apa?");
 const timelines = ref<Timeline[]>([]);
 
-import { getToken, getMessaging, onMessage } from "firebase/messaging"
-
 const fb = useFirebaseApp()
 const messaging = getMessaging()
 
 async function setupFcm() {
-    try {
-        const permission = await Notification.requestPermission()
-        if (permission === 'granted') {
-            const token = await getToken(messaging, {
-                vapidKey: useRuntimeConfig().public.firebase_vapid_key
-            })
-            console.log("token", token)
+    if (user) {
+        try {
+            const permission = await Notification.requestPermission()
+            if (permission === 'granted') {
+                const token = await getToken(messaging, { vapidKey: useRuntimeConfig().public.firebase_vapid_key });
+                if (token) {
+                    console.log("saving token...", token);
+                    user.fcm_token = token;
+                    const saveToken = await saveFcmToken(user);
+                }
+            }
+        } catch (error) {
+            console.log(error)
         }
-    } catch (error) {
-        console.log(error)
     }
 }
 

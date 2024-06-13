@@ -5,4 +5,5 @@ export interface User {
     name:       string;
     avatar:     string;
     is_online?: boolean;
+    fcm_token?: string;
 }
