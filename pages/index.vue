@@ -42,7 +42,11 @@ const messaging = getMessaging()
 async function setupFcm() {
     if (user) {
         try {
-            const permission = await Notification.requestPermission()
+            let permission = Notification.permission;
+            if (permission != 'granted') {
+                permission = await Notification.requestPermission();
+            }
+
             if (permission === 'granted') {
                 const token = await getToken(messaging, { vapidKey: useRuntimeConfig().public.firebase_vapid_key });
                 if (token) {
