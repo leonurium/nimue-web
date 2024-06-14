@@ -6,7 +6,7 @@ export default () => {
     const base_url = config_public.base_api_url + config_public.api_version
     const KEY_REFRESH_TOKEN = 'refresh_token'
     const { getDeviceId } = useDevice();
-    const { getPreferences } = usePreferencesService();
+    const { getPreferences, getUrls } = usePreferencesService();
 
     const useAuthRefreshToken = () => localStorage.getItem(KEY_REFRESH_TOKEN)
     const useAuthToken = () => useState('auth_token')
@@ -194,6 +194,32 @@ export default () => {
         })
     };
 
+    const saveFcmToken = (user: User) => {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const socketServer = getUrls()?.socket_server ?? ""
+                const socketUrl = socketServer + config_public.api_version
+                const response = await $fetch<BaseResponse>(
+                    `${socketUrl}/savetoken`,
+                    {
+                        method: 'POST',
+                        body: {
+                            'user': user
+                        },
+                    }
+                );
+                if (response.success) {
+                    resolve(true)
+                } else {
+                    reject(response.message)
+                }
+            } catch (error) {
+                console.log(error)
+                reject(error)
+            }
+        })
+    }
+
     const initAuth = () => {
         return new Promise(async (resolve, reject) => {
             setIsAuthLoading(true)
@@ -218,6 +244,7 @@ export default () => {
         loginAsAnonymous,
         register,
         refreshToken,
+        saveFcmToken,
         useAuthUser,
         useAuthToken,
         initAuth
