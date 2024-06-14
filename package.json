@@ -29,6 +29,7 @@
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss-animate": "^1.0.7",
     "typescript": "^5.3.3",
+    "vite-plugin-remove-console": "^2.2.0",
     "vue": "^3.4.6",
     "vue-router": "^4.2.5"
   },

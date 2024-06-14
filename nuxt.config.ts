@@ -1,4 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import removeConsole from "vite-plugin-remove-console";
+
 export default defineNuxtConfig({
     devtools: { enabled: true },
     modules: [
@@ -13,6 +15,12 @@ export default defineNuxtConfig({
         "@dargmuesli/nuxt-cookie-control",
         "@vite-pwa/nuxt"
     ],
+
+    vite: {
+        plugins: [
+            removeConsole()
+        ]
+    },
 
     tailwindcss: {
         exposeConfig: true,
