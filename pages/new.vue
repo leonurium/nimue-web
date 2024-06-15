@@ -52,13 +52,11 @@ const onSubmit = handleSubmit( async (values) => {
             showMessage("Successfully posted!", TypeMessage.success)
             setTimeout(() => {
                 navigateTo('/')
+                loading.value = false
             }, 2000);
         })
         .catch((error) => {
             showMessage(error, TypeMessage.destructive)
         })
-        .finally(() => {
-            loading.value = false
-        })
 });
-</script>~/types/User
+</script>
