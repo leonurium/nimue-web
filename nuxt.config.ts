@@ -86,6 +86,11 @@ export default defineNuxtConfig({
             name: 'Netijen Curhat',
             short_name: 'Netijen Curhat',
             description: 'Social Network Anonymously',
+            theme_color: '#4A90E2',
+            background_color: '#ffffff',
+            display: 'standalone',
+            scope: '/',
+            start_url: '/',
             icons: [
                 {
                     src: "pwa-64x64.png",

@@ -20,7 +20,7 @@ export interface ImagePreferences {
     image_url_register_lg?:      string;
     image_url_app_store?:        string;
     image_url_play_store?:       string;
-    image_url_app_preview?:      string;
+    image_url_app_previews?:     string[];
 }
 
 export interface UrlPreferences {
