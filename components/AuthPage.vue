@@ -2,11 +2,13 @@
     <div class="flex h-screen">
         <div class="relative flex-1 hidden w-0 lg:block">
             <img class="absolute inset-0 object-cover w-full h-full z-0" :src="imageLogin" />
-            <div v-if="imageAppPreview" class="absolute inset-0 bg-black opacity-50 z-10"></div>
+            <div v-if="(imageAppPreviews?.length ?? 0) > 0" class="absolute inset-0 bg-black opacity-50 z-10"></div>
 
-            <div v-if="imageAppPreview" class="flex flex-col items-center justify-center h-screen gap-4">
-                <img :src="imageAppPreview" alt="App Preview" class="h-[calc(100svh/2)] z-20">
-                <p class="text-primary-foreground z-20">Get The App</p>
+            <div v-if="(imageAppPreviews?.length ?? 0) > 0" class="flex flex-col items-center justify-center h-screen gap-4">
+                <div class="flex flex-row gap-2">
+                    <img v-for="imagePreview in imageAppPreviews" :src="imagePreview" alt="App Preview" class="h-[calc(100svh/2)] z-20">
+                </div>
+                <p class="text-secondary-foreground z-20">Get The App</p>
                 <div class="flex flex-row gap-8 text-center justify-center z-20">
                     <NuxtLink v-if="urlAppstore" :to="urlAppstore">
                         <img :src="imageAppstore"
@@ -74,7 +76,7 @@ const { login, loginAsAnonymous } = useAuth()
 const { showMessage } = useMessage()
 const { getImages, getUrls, getAppName } = usePreferencesService()
 const imageLogin = getImages()?.image_url_login_lg
-const imageAppPreview = getImages()?.image_url_app_preview
+const imageAppPreviews = getImages()?.image_url_app_previews
 const imageAppstore = getImages()?.image_url_app_store
 const imagePlaystore = getImages()?.image_url_play_store
 const urlAppstore = getUrls()?.app_store
