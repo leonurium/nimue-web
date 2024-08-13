@@ -1,5 +1,5 @@
 <template>
-    <div @contextmenu.prevent="onContextMenu">
+    <div>
         <VitePwaManifest />
         <NuxtLoadingIndicator />
         <div v-if="isAuthLoading">
@@ -53,10 +53,6 @@ const isAuthLoading = useAuthLoading()
 const route = useRoute()
 const { getUrls } = usePreferencesService()
 const socket = useSocket.getInstance()
-
-function onContextMenu() {
-    console.log("Ciluk Ba!")
-}
 
 // example: react to a cookie being accepted
 watch(
